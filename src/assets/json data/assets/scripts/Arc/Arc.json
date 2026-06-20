@@ -1,0 +1,148 @@
+{
+    "Title": "Arc",
+    "Tags": ["New"],
+
+    "Info": {
+        "Creator": "Chris",
+        "Version": "1.0.0",
+        "Last Update": "2026-02-14",
+        
+        "Licenses": {
+            "Personal Use": {
+                "LicenseCode": "CH-PU",
+                "Pricing": {
+                    "Price": 2.99,
+                    "Currency": "EUR",
+                    "Tax Covered": true,
+                    "Payment Type": "One-Time Purchase",
+                    "Refund Policy": "Non-Refundable"
+                },
+                "Terms": {
+                    "Usage Limit": 1,
+                    "Usage Type": "Single-Project",
+                    "Updates": "Lifetime for version 1.x - 2.x only",
+                    "Allow Commercial Use": false,
+                    "Allow Commissions": false,
+                    "Allow Modifications": true
+                },
+                "Restrictions": {
+                    "Reselling": "Strictly Prohibited",
+                    "Resell Penalty": "License Revocation & DMCA Claim",
+                    "Sublicensing": "Strictly Prohibited",
+                    "Derivative Works": "Allowed for personal use only"
+                },
+                "Attribution": {
+                    "Mandatory Credit": true,
+                    "Remove Branding": false,
+                    "Credit Method": "Header Comment & Client Console Log",
+                    "Console Text": "This Game Uses [ScriptName] From Zantix.Shop"
+                },
+                "Enforcement": {
+                    "Contract Type": "Digital Agreement",
+                    "ViolationAction": "License Revocation & DMCA"
+                }
+            },
+            "Developer License": {
+                "LicenseCode": "CH-DEV",
+                "Pricing": {
+                    "Price": 14.99,
+                    "Currency": "EUR",
+                    "Tax Covered": true,
+                    "Payment Type": "One-Time Purchase",
+                    "Refund Policy": "Non-Refundable"
+                },
+                "Terms": {
+                    "Usage Limit": 1,
+                    "Usage Type": "Client Commission",
+                    "Updates": "Lifetime for version 1.x - 3.x only",
+                    "Allow Commercial Use": true,
+                    "Allow Commissions": true,
+                    "Allow Modifications": true
+                },
+                "Restrictions": {
+                    "Reselling": "Strictly Prohibited",
+                    "Resell Penalty": "License Revocation & DMCA Claim",
+                    "Sublicensing": "Permitted for Single Client Handover",
+                    "Derivative Works": "Allowed for specific project only"
+                },
+                "Attribution": {
+                    "Mandatory Credit": false,
+                    "Remove Branding": true,
+                    "Credit Method": "Optional Header Comment & Client Console Log",
+                    "Console Text": "Optional This Game Uses [ScriptName] From Zantix.Shop"
+                },
+                "Enforcement": {
+                    "Contract Type": "Developer Agreement",
+                    "ViolationAction": "License Revocation & DMCA"
+                }
+            },
+            "Commercial License": {
+                "LicenseCode": "CH-CML",
+                "Pricing": {
+                    "Price": 24.99,
+                    "Currency": "EUR",
+                    "Tax Covered": true,
+                    "Payment Type": "One-Time Purchase",
+                    "Refund Policy": "Non-Refundable"
+                },
+                "Terms": {
+                    "Usage Limit": 3,
+                    "Usage Type": "Commercial Games",
+                    "Updates": "Unlimited",
+                    "Allow Commercial Use": true,
+                    "Allow Commissions": false,
+                    "Allow Modifications": true
+                },
+                "Restrictions": {
+                    "Reselling": "Strictly Prohibited",
+                    "Resell Penalty": "License Revocation & DMCA Claim",
+                    "Sublicensing": "Prohibited",
+                    "Derivative Works": "Allowed for internal use"
+                },
+                "Attribution": {
+                    "Mandatory Credit": true,
+                    "Remove Branding": true,
+                    "Credit Method": "Optional Header Comment & Mandatory Client Console Log",
+                    "Console Text": "This Game Uses [ScriptName] From Zantix.Shop"
+                },
+                "Enforcement": {
+                    "Contract Type": "Standard Commercial Agreement",
+                    "ViolationAction": "License Revocation & DMCA"
+                }
+            }
+        },
+
+        "Usage": {
+            "Scripting Knowledge Required": 3,
+            "Required Studio Settings": ["DataStoreService"]
+        },
+
+        "Includes": [
+            "ReadMe Script",
+            "ArcServer ServerScript",
+            "ArcClient LocalScript",
+            "Arc ModuleScript"
+        ],
+
+        "Script": {
+            "Total ModuleScript Lines": 197,
+            "Can Be Required By": "Server & Client",
+            "Functions": 3,
+            "Methods": 0,
+            "Is Obfuscated": false,
+
+            "Features": [
+                "Styled System Messages",
+                "Global System Messages",
+                "Full BubbleChat Appearance & Behavior Customization",
+                "Font Weight, Style And Asset-Based Font Support"
+            ],
+
+            "Dependencies": [
+                "Executable ServerScript & LocalScript",
+                "TextChatService",
+                "BubbleChatConfiguration"
+            ]
+        }
+    }
+}

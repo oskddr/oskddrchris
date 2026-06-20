@@ -1,0 +1,43 @@
+{
+  "Title": "Henry",
+  "Rank": "H",
+  "Earned": "0 €EUR",
+  "Contract": "Paper",
+  "Accent": "Blue",
+
+  "Info": {
+    "Name": "Henry",
+    "Origin": "Germany",
+    "Timezone": "CET",
+    "Availability": "",
+    "Not Availability": "N/A"
+  },
+
+  "Commissions": {
+    "State": "Closed",
+    "Preferred Work": ["UI/UX"],
+    "Payment Platform": "",
+    "Hourly": "10 €EUR",
+    "Turnaround": "",
+    "Refunds": true
+  },
+
+  "Role": [
+    "UI/UX Artist"
+  ],
+
+  "Experience": {
+    "VFX": "Under 1 Year"
+  },
+
+  "Contact": {
+    "Discord Username": "stormchaser463_50408",
+    "Roblox Username": "StormYTTroblox",
+    "Email Contact": "viefers.henry@gmail.com"
+  },
+
+  "Profile": {
+    "Roblox": "https://www.roblox.com/users/10325360896/profile",
+    "YouTube": "https://www.youtube.com/@stormyt-roblox"
+  }
+}

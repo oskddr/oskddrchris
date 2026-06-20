@@ -1,0 +1,80 @@
+{
+    "Title": "Feather",
+    "Tags": ["New"],
+
+    "Info": {
+        "Creator": "Chris",
+        "Version": "1.0.0",
+        "Last Update": "2026-02-16",
+        
+        "Licenses": {
+            "Open Source / MIT": {
+                "LicenseCode": "CH-MIT",
+                "Pricing": {
+                    "Price": 0.00,
+                    "Currency": "EUR",
+                    "Tax Covered": true,
+                    "Payment Type": "Free / Open Source",
+                    "Refund Policy": "N/A"
+                },
+                "Terms": {
+                    "Usage Limit": "Unlimited",
+                    "Usage Type": "Open Source",
+                    "Updates": "Unlimited",
+                    "Allow Commercial Use": true,
+                    "Allow Commissions": true,
+                    "Allow Modifications": true
+                },
+                "Restrictions": {
+                    "Reselling": "Permitted (Under MIT Terms)",
+                    "Resell Penalty": "N/A",
+                    "Sublicensing": "Permitted",
+                    "Derivative Works": "Permitted"
+                },
+                "Attribution": {
+                    "Mandatory Credit": true,
+                    "Remove Branding": false,
+                    "Credit Method": "Header Comment (License Preservation)",
+                    "Console Text": "This Game Uses [ScriptName] - Licensed under MIT from Zantix.shop"
+                },
+                "Enforcement": {
+                    "Contract Type": "MIT License Agreement",
+                    "ViolationAction": "Credit Removal Dispute"
+                }
+            }
+        },
+
+        "Usage": {
+            "Scripting Knowledge Required": 3,
+            "Required Studio Settings": []
+        },
+
+        "Includes": [
+            "ReadMe Script",
+            "FeatherClient LocalScript",
+            "Feather ModuleScript",
+            "FeatherSetttings ModuleScript"
+        ],
+
+        "Script": {
+            "Total ModuleScript Lines": 208,
+            "Can Be Required By": "Server",
+            "Functions": 2,
+            "Methods": 0,
+            "Is Obfuscated": false,
+
+            "Features": [
+                "Dynamic texture hiding based on camera distance",
+                "Part tracking with performance budget system",
+                "Automatic texture transparency caching and restore",
+                "Configurable update rate and processing limits"
+            ],
+
+            "Dependencies": [
+                "Executable LocalScript",
+                "RunService",
+                "UserInputService"
+            ]
+        }
+    }
+}

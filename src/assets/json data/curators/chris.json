@@ -1,0 +1,35 @@
+{
+  "Title": "Chris",
+  "Rank": "A",
+
+  "Info": {
+    "Name": "Christopher",
+    "Origin": "Germany",
+    "Timezone": "CET",
+    "Availability": "9AM - 11PM [CET]",
+    "Not Availability": "N/A"
+  },
+
+  "Role": [
+    "Lead Developer", "Planner"
+  ],
+
+  "Experience": {
+    "Luau": "4 Years",
+    "UI/UX": "3 Years",
+    "Website Development": "1.5 Years"
+  },
+
+  "Contact": {
+    "Discord Username": "oskddrchris",
+    "Roblox Username": "Zelvqx",
+    "Email Contact": "christopherboilolxd@gmail.com"
+  },
+
+  "Profile": {
+    "Roblox": "https://www.roblox.com/users/1784561175/profile",
+    "YouTube": "https://www.youtube.com/@V-Chris-V/featured",
+    "X": "https://x.com/GG_Chris_GG",
+    "Bsky": "https://bsky.app/profile/did:plc:amggtiy5inemmeq5xpoxf7wy"
+  }
+}

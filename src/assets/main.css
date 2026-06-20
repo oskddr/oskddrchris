@@ -1,0 +1,42 @@
+@import './base.css';
+
+@keyframes glow {
+  0% {
+    background-position: 0% 0%;
+  }
+  25% {
+    background-position: 35% 35%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  75% {
+    background-position: 35% 35%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
+#app {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  font-weight: normal;
+  position: relative;
+}
+
+a,
+.green {
+  text-decoration: none;
+  color: hsla(160, 100%, 37%, 1);
+  transition: 0.4s;
+  padding: 3px;
+}
+
+@media (hover: hover) {
+  a:hover {
+    background-color: hsla(160, 100%, 37%, 0.2);
+  }
+}

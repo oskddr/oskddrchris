@@ -1,0 +1,31 @@
+{
+  "Title": "Title",
+  "Rank": "E",
+
+  "Info": {
+    "Name": "Name",
+    "Origin": "Origin",
+    "Languages": "Languages",
+    "Timezone": "Timezone",
+    "Availability": "Availability [CET]",
+    "Not Availability": "N/A"
+  },
+
+  "Role": [
+    "Role"
+  ],
+
+  "Experience": {
+   "Role": "RoleTime"
+  },
+
+  "Contact": {
+    "Discord Username": "whynot0236",
+    "Roblox Username": "SCP_FoundationII",
+    "Email Contact": "nikoya2203@gmail.com"
+  },
+
+  "Profiles": {
+    "Roblox": "https://www.roblox.com/users/4446782407/profile"
+  }
+}

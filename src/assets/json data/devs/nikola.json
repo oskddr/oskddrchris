@@ -1,0 +1,47 @@
+{
+  "Title": "Nikola",
+  "Rank": "H",
+  "Earned": "0 €EUR",
+  "Contract": "Digital",
+  "Accent": "Blue",
+
+  "Info": {
+    "Name": "Nikola",
+    "Origin": "Bulgaria",
+    "Languages": "English, German, Bulgarian",
+    "Timezone": "CET",
+    "Availability": "10AM - 10PM [CET]",
+    "Not Availability": "N/A"
+  },
+
+  "Commissions": {
+    "State": "Open",
+    "Prefers": ["Building & Terrain Editor"],
+    "Payment Platform": "Master Revolut",
+    "Hourly": "15 - 25 €EUR",
+    "Turnaround": "1 - 14 Days",
+    "Refunds": false
+  },
+
+  "Role": [
+    "Builder",
+    "Terrain Editor",
+    "Robloxstudio Modeling"
+  ],
+
+  "Experience": {
+    "Building": "2.5 Years",
+    "Terrain Editor": "2 Years",
+    "RobloxStudio Modeling": "1.5 Year"
+  },
+
+  "Contact": {
+    "Discord Username": "whynot0236",
+    "Roblox Username": "SCP_FoundationII",
+    "Email Contact": "nikoya2203@gmail.com"
+  },
+
+  "Profiles": {
+    "Roblox": "https://www.roblox.com/users/4446782407/profile"
+  }
+}

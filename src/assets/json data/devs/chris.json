@@ -1,0 +1,50 @@
+{
+  "Title": "Chris",
+  "Rank": "L",
+  "Earned": "1,000+ €EUR",
+  "Contract": "Digital",
+  "Accent": "Purple",
+
+  "Info": {
+    "Name": "Christopher",
+    "Origin": "Germany",
+    "Timezone": "CET",
+    "Availability": "9AM - 11PM [CET]",
+    "Not Availability": "N/A"
+  },
+
+  "Commissions": {
+    "State": "Open",
+    "Preferred Work": ["ModuleScripts", "Client Logic", "UI/UX"],
+    "Payment Platform": "PayPal",
+    "Hourly": "15-35 €EUR",
+    "Upfront": 25,
+    "Turnaround": "1-14",
+    "Refunds": false
+  },
+
+  "Role": [
+    "Website Creator",
+    "ModuleScript Scripter",
+    "UI/UX Artist"
+  ],
+
+  "Experience": {
+    "Luau": "4 Years",
+    "UI/UX": "3 Years",
+    "Website Development": "2 Years"
+  },
+
+  "Contact": {
+    "Discord Username": "oskddrchris",
+    "Roblox Username": "Zelvqx",
+    "Email Contact": "christopherboilolxd@gmail.com"
+  },
+
+  "Profile": {
+    "Roblox": "https://www.roblox.com/users/1784561175/profile",
+    "YouTube": "https://www.youtube.com/@V-Chris-V/featured",
+    "X": "https://x.com/GG_Chris_GG",
+    "Bsky": "https://bsky.app/profile/did:plc:amggtiy5inemmeq5xpoxf7wy"
+  }
+}

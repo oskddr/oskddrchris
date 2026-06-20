@@ -1,0 +1,42 @@
+{
+  "Title": "Alex",
+  "Rank": "H",
+  "Earned": "0 €EUR",
+  "Contract": "Paper",
+  "Accent": "Blue",
+
+  "Info": {
+    "Name": "Alex",
+    "Origin": "Germany",
+    "Timezone": "CET",
+    "Availability": "",
+    "Not Availability": "N/A"
+  },
+
+  "Commissions": {
+    "State": "Closed",
+    "Preferred Work": ["VFX"],
+    "Payment Platform": "PayPal",
+    "Hourly": "10 €EUR",
+    "Turnaround": "",
+    "Refunds": true
+  },
+
+  "Role": [
+    "VFX Artist"
+  ],
+
+  "Experience": {
+    "VFX": "Under 1 Year"
+  },
+
+  "Contact": {
+    "Discord Username": "2b_24",
+    "Roblox Username": "Samuraileader247",
+    "Email Contact": ""
+  },
+
+  "Profile": {
+    "Roblox": "https://www.roblox.com/users/3924433069/profile"
+  }
+}

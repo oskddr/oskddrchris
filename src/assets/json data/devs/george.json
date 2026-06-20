@@ -1,0 +1,44 @@
+{
+  "Title": "George",
+  "Rank": "H",
+  "Earned": "0 €EUR",
+  "Contract": "Digital",
+  "Accent": "Blue",
+
+  "Info": {
+    "Name": "George",
+    "Origin": "France",
+    "Languages": "English, French",
+    "Timezone": "CET",
+    "Availability": "4PM - 8:30PM [CET]",
+    "Not Availability": "Monday"
+  },
+
+  "Commissions": {
+    "Status": "Open",
+    "Prefers": ["Animation R6"],
+    "Payment Platform": "Roblox",
+    "Hourly": "10 €EUR",
+    "Turnaround": "1 - 14 Days",
+    "Refunds": false
+  },
+
+  "Role": [
+    "R6 Animator"
+  ],
+
+  "Experience": {
+    "Building": "1 Year"
+  },
+
+  "Contact": {
+    "Discord Username": "georgie0081",
+    "Roblox Username": "ZuriLewa",
+    "Email Contact": "george.thouvenin@icloud.com"
+  },
+
+  "Profiles": {
+    "Roblox": "https://www.roblox.com/users/1544213868/profile",
+    "X": "https://x.com/GeorgeT45499"
+  }
+}
