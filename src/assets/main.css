@@ -27,6 +27,67 @@
   position: relative;
 }
 
+.search-command-hint {
+  margin: 0;
+  padding-top: 0.85rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.42);
+  font: 0.72rem "Space Grotesk", sans-serif;
+  text-align: center;
+}
+
+.search-command-hint kbd {
+  margin-inline: 0.2rem;
+  padding: 0.12rem 0.38rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 5px;
+  color: rgba(255, 255, 255, 0.78);
+  background: rgba(255, 255, 255, 0.05);
+  font: inherit;
+}
+
+.search-modal {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 999998 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: clamp(1.25rem, 4vw, 2.5rem) !important;
+  overflow: hidden !important;
+  box-sizing: border-box;
+}
+
+.search-modal > .search-card {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  width: min(620px, 94vw) !important;
+  max-height: min(78vh, 720px) !important;
+  margin: 0 !important;
+  overflow: auto !important;
+  box-sizing: border-box;
+  transform: none !important;
+}
+
+.search-modal > .search-card.blank-card {
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+}
+
+.search-modal .page-list,
+.search-modal .page-list > li,
+.search-modal .page-option,
+.search-modal .page-inner {
+  width: 100% !important;
+  align-self: stretch !important;
+  box-sizing: border-box;
+}
+
+.search-modal .page-option {
+  display: flex !important;
+}
+
 a,
 .green {
   text-decoration: none;

@@ -2,7 +2,6 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { RouterLink, useRoute, useRouter } from 'vue-router';
 import SmoothCursor from '@/components/SmoothCursor.vue';
-import { socialSearchPages } from '@/lib/socialSearchPages';
 import { matchesSearch } from '@/lib/searchMatch';
 
 const router = useRouter();
@@ -32,11 +31,7 @@ const pages = [
   { slug: 'open-source', label: 'Open Source', href: '/opensource' },
   { slug: 'developers', label: 'Developers', href: '/Team' },
   { slug: 'links', label: 'Links', href: '/links' },
-  { slug: 'featured', label: 'Featured Work', href: '/#A3' },
   { slug: 'testimonials', label: 'Testimonials', href: '/testimonials' },
-  { slug: 'contact', label: 'Contact', href: '/#FooterMain' },
-  { slug: 'tos', label: 'TOS', href: '#tos' },
-  ...socialSearchPages,
 ];
 
 const openSourceProjects = [
@@ -49,13 +44,13 @@ const openSourceProjects = [
 
 const filteredPages = computed(() => {
   const query = searchQuery.value.trim().toLowerCase();
-  if (!query) return pages.filter((page) => !page.searchOnly);
+  if (!query || query === '.all') return pages.filter((page) => !page.searchOnly);
   return pages.filter((page) => matchesSearch(query, [page.label, page.slug, page.href, page.keywords]));
 });
 
 const filteredOpenSourceProjects = computed(() => {
   const query = searchQuery.value.trim().toLowerCase();
-  if (!query) return openSourceProjects;
+  if (!query || query === '.all') return openSourceProjects;
   const categoryMatch = ['project', 'projects', 'open source', 'opensource', 'asset', 'assets', 'code']
     .some((term) => term.includes(query) || query.includes(term));
   if (categoryMatch) return openSourceProjects;
@@ -214,7 +209,7 @@ onBeforeUnmount(() => {
       <header class="links-header">
         <h1 class="links-title">
           <span class="title-line">Let's connect</span>
-          <span class="title-line title-line--accent">online.</span>
+          <span class="title-line title-line--accent">online</span>
         </h1>
         <p class="links-lede">Find my work, updates, and communities across the platforms I use most.</p>
       </header>
@@ -298,6 +293,7 @@ onBeforeUnmount(() => {
                           <svg v-else-if="page.slug === 'open-source'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18"/><path d="m6 7 1-3h10l1 3"/><rect x="5" y="7" width="14" height="12" rx="2"/><path d="M9 11h6M9 15h6"/></svg>
                           <svg v-else-if="page.slug === 'developers'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m4 21 4-4M4 17l4 4"/><path d="M15.5 3.5a2.12 2.12 0 0 1 3 3L11 14l-4 1 1-4 7.5-7.5Z"/></svg>
                           <svg v-else-if="page.slug === 'links'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 1 0-7l1.5-1.5a5 5 0 0 1 7 7L17 13"/><path d="M14 11a5 5 0 0 1 0 7l-1.5 1.5a5 5 0 1 1-7-7L7 11"/></svg>
+                          <svg v-else-if="page.slug === 'testimonials'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 15a3 3 0 0 1-3 3H9l-5 3v-6a3 3 0 0 1-1-2.25V7a3 3 0 0 1 3-3h11a3 3 0 0 1 3 3Z"/><path d="M8 9h.01M12 9h.01M16 9h.01"/></svg>
                           <svg v-else-if="page.slug.startsWith('social-')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 1 0-7l1.5-1.5a5 5 0 0 1 7 7L17 13"/><path d="M14 11a5 5 0 0 1 0 7l-1.5 1.5a5 5 0 1 1-7-7L7 11"/></svg>
                           <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z"/><path d="M14 2v5h5M9 13h6M9 17h6"/></svg>
                         </span>
@@ -329,6 +325,7 @@ onBeforeUnmount(() => {
               </transition>
             </div>
           </div>
+          <p class="search-command-hint">Fun fact: type <kbd>.all</kbd> to show everything</p>
         </div>
       </div>
     </transition>

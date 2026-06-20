@@ -2,12 +2,23 @@
 import { computed } from 'vue';
 import { navigationLoader } from '@/lib/navigationLoader';
 
-const steps = computed(() => [
-  { text: 'Finding destination', afterText: 'Destination found' },
-  { text: 'Loading page', afterText: 'Page loaded' },
-  { text: 'Preparing content', afterText: 'Content ready' },
-  { text: `Opening ${navigationLoader.target}`, afterText: 'Ready' },
-]);
+const steps = computed(() => {
+  if (navigationLoader.target === 'Testimonials') {
+    return [
+      { text: 'Finding client reviews', afterText: 'Reviews found' },
+      { text: 'Loading testimonials', afterText: 'Testimonials loaded' },
+      { text: 'Preparing client stories', afterText: 'Stories ready' },
+      { text: 'Opening Testimonials', afterText: 'Ready' },
+    ];
+  }
+
+  return [
+    { text: 'Finding destination', afterText: 'Destination found' },
+    { text: 'Loading page', afterText: 'Page loaded' },
+    { text: 'Preparing content', afterText: 'Content ready' },
+    { text: `Opening ${navigationLoader.target}`, afterText: 'Ready' },
+  ];
+});
 
 </script>
 

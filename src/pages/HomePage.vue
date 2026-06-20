@@ -163,53 +163,40 @@
         <h3>{{ t("testimonialsTitle") }}</h3>
         <p class="lede">{{ t("testimonialsDescription") }}</p>
       </div>
-      <div class="logo-row" data-reveal-stagger="0.05">
-        <span class="logo-pill" v-for="logo in studioLogos" :key="logo" data-reveal="fade">
-          <GlowBorder
-            class="logo-pill__glow"
-            :border-radius="999"
-            :border-width="1"
-            :duration="8"
-            :color="[
-              'rgba(18,72,210,0)',
-              'rgba(18,72,210,0.9)',
-              'rgba(255,255,255,0.55)',
-              'rgba(18,72,210,0)'
-            ]"
-          />
-          <span class="logo-pill__label">{{ t(logo) }}</span>
-        </span>
-      </div>
       <div class="testimonial-grid" data-reveal="fade-up">
         <figure
           class="testimonial-card"
-          v-for="(quote, idx) in testimonials.slice(0, 3)"
-          :key="`grid-${idx}`"
+          v-for="review in homeTestimonials"
+          :key="review.id"
         >
           <div class="testimonial-stars" aria-label="5 out of 5 stars">★★★★★</div>
-          <blockquote>{{ t(quote.quoteKey) }}</blockquote>
+          <blockquote>{{ review.quote }}</blockquote>
           <figcaption>
             <span
               class="testimonial-avatar"
-              :data-img="quote.nameKey === 'testimonial1Name'"
+              :data-img="Boolean(review.image)"
               aria-hidden="true"
             >
+              <span class="testimonial-avatar__fallback">?</span>
               <img
-                v-if="quote.nameKey === 'testimonial1Name'"
-                src="https://cdn.discordapp.com/avatars/1234583019592089701/fe63c07e2f36f957a52fa3a0c082a423.webp?size=128"
+                v-if="review.image"
+                :src="review.image"
                 alt=""
+                @error="$event.currentTarget.remove()"
               />
-              <span v-else>{{ t(quote.nameKey).slice(0,1) }}</span>
             </span>
             <span class="testimonial-meta">
-              <span class="name">{{ t(quote.nameKey) }}</span>
-              <span class="role">{{ t(quote.roleKey) }}</span>
+              <span class="name">{{ review.name }}</span>
+              <span class="role">{{ review.role }}</span>
             </span>
           </figcaption>
         </figure>
       </div>
       <div class="testimonial-cta" data-reveal="fade-up">
-        <!-- CTA removed per request -->
+        <RouterLink class="testimonial-link" to="/testimonials" data-cursor-hover>
+          <span>View all reviews</span>
+          <span class="testimonial-link__arrow" aria-hidden="true">→</span>
+        </RouterLink>
       </div>
 
     </section>
@@ -353,6 +340,7 @@
                             <path d="M10 13a5 5 0 0 1 0-7l1.5-1.5a5 5 0 0 1 7 7L17 13" />
                             <path d="M14 11a5 5 0 0 1 0 7L12.5 19.5a5 5 0 1 1-7-7L7 11" />
                           </svg>
+                          <svg v-else-if="page.slug === 'testimonials'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 15a3 3 0 0 1-3 3H9l-5 3v-6a3 3 0 0 1-1-2.25V7a3 3 0 0 1 3-3h11a3 3 0 0 1 3 3Z"/><path d="M8 9h.01M12 9h.01M16 9h.01"/></svg>
                           <svg v-else-if="page.slug.startsWith('social-')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 1 0-7l1.5-1.5a5 5 0 0 1 7 7L17 13"/><path d="M14 11a5 5 0 0 1 0 7l-1.5 1.5a5 5 0 1 1-7-7L7 11"/></svg>
                           <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z" />
@@ -413,6 +401,7 @@
               </transition>
             </div>
           </div>
+          <p class="search-command-hint">Fun fact: type <kbd>.all</kbd> to show everything</p>
         </div>
       </div>
     </transition>
@@ -990,6 +979,32 @@ h1,h2,h3,h4,h5,h6{
   margin-top: 0.8rem;
 }
 
+.testimonial-link{
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.32);
+  color: rgba(255,255,255,0.82);
+  font: 600 0.88rem "Space Grotesk", sans-serif;
+  letter-spacing: 0.02em;
+  transition: border-color 180ms ease, color 180ms ease;
+}
+
+.testimonial-link__arrow{
+  color: inherit;
+  transition: transform 180ms ease;
+}
+
+.testimonial-link:hover{
+  border-color: #fff;
+  color: #fff;
+}
+
+.testimonial-link:hover .testimonial-link__arrow{
+  transform: translateX(4px);
+}
+
 .ghost-link--primary{
   border-color: rgba(74,149,255,0.36);
   background: linear-gradient(120deg, rgba(74,149,255,0.18), rgba(12,18,32,0.9));
@@ -1162,6 +1177,7 @@ h1,h2,h3,h4,h5,h6{
 }
 
 .testimonial-avatar{
+  position: relative;
   width: 34px;
   height: 34px;
   border-radius: 50%;
@@ -1174,6 +1190,10 @@ h1,h2,h3,h4,h5,h6{
   letter-spacing: 0.02em;
 }
 
+.testimonial-avatar__fallback{
+  color: #fff;
+}
+
 .testimonial-avatar[data-img="true"]{
   padding: 0;
   background: none;
@@ -1181,6 +1201,8 @@ h1,h2,h3,h4,h5,h6{
 }
 
 .testimonial-avatar img{
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -2515,11 +2537,10 @@ import { computed, onBeforeUnmount, onMounted, ref, watch, nextTick } from "vue"
 import type { HTMLAttributes } from "vue";
 import { useRouter } from "vue-router";
 import SmoothCursor from "../components/SmoothCursor.vue";
-import { socialSearchPages } from "@/lib/socialSearchPages";
 import { matchesSearch } from "@/lib/searchMatch";
 import FlipWords from "../components/FlipWords.vue";
-import GlowBorder from "../components/ui/glow-border/GlowBorder.vue";
 import { RouterLink } from "vue-router";
+import { testimonials } from "@/data/testimonials";
 
 interface Props {
   class?: HTMLAttributes["class"];
@@ -2639,11 +2660,7 @@ const pages = [
   { slug: "assets", label: "Open Source", href: "/opensource" },
   { slug: "developers", label: "Developers", href: "/Team" },
   { slug: "links", label: "Links", href: "/links" },
-  { slug: "featured", label: "Featured Work", href: "/#A3" },
   { slug: "testimonials", label: "Testimonials", href: "/testimonials" },
-  { slug: "contact", label: "Contact", href: "/#FooterMain" },
-  { slug: "tos", label: "TOS", href: "#tos" },
-  ...socialSearchPages,
 ];
 const openSourceProjects = [
   { slug: "project-dna", title: "Double Helix DNA" },
@@ -2878,20 +2895,14 @@ const refreshScrollAnimations = () => {
   });
 };
 
-const studioLogos = [
-  "logoStudio1",
-  "logoStudio2",
-  "logoStudio3",
-  "logoStudio4",
-];
-
-const testimonials = [
-  { quoteKey: "testimonial1Quote", nameKey: "testimonial1Name", roleKey: "testimonial1Role" }, // keep Someone/dev review
-  { quoteKey: "testimonial2Quote", nameKey: "testimonial2Name", roleKey: "testimonial2Role" },
-  { quoteKey: "testimonial3Quote", nameKey: "testimonial3Name", roleKey: "testimonial3Role" },
-  { quoteKey: "testimonial4Quote", nameKey: "testimonial4Name", roleKey: "testimonial4Role" },
-  { quoteKey: "testimonial5Quote", nameKey: "testimonial5Name", roleKey: "testimonial5Role" },
-];
+const homeTestimonials = (() => {
+  const shuffled = [...testimonials];
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[randomIndex]] = [shuffled[randomIndex], shuffled[index]];
+  }
+  return shuffled.slice(0, 3);
+})();
 
 let gl: WebGLRenderingContext | null = null;
 let program: WebGLProgram | null = null;
@@ -3153,7 +3164,7 @@ const filteredThemes = computed(() => {
 
 const filteredPages = computed(() => {
   const q = searchQuery.value.trim().toLowerCase();
-  if (!q) return pages.filter((page) => !page.searchOnly);
+  if (!q || q === ".all") return pages.filter((page) => !page.searchOnly);
   const compactQ = q.replace(/[^a-z0-9]/g, "");
   const categoryQuery = ["page", "pages", "site", "navigation", "nav"].some(
     (term) => q && (q.includes(term) || term.includes(q)),
@@ -3164,7 +3175,7 @@ const filteredPages = computed(() => {
 
 const filteredOpenSourceProjects = computed(() => {
   const q = searchQuery.value.trim().toLowerCase();
-  if (!q) return openSourceProjects;
+  if (!q || q === ".all") return openSourceProjects;
   const compactQ = q.replace(/[^a-z0-9]/g, "");
   const categoryQuery = ["project", "projects", "open source", "opensource", "asset", "assets", "code"].some(
     (term) => q && (q.includes(term) || term.includes(q)),

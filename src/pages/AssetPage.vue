@@ -131,6 +131,7 @@
                             <path d="M10 13a5 5 0 0 1 0-7l1.5-1.5a5 5 0 0 1 7 7L17 13" />
                             <path d="M14 11a5 5 0 0 1 0 7L12.5 19.5a5 5 0 1 1-7-7L7 11" />
                         </svg>
+                        <svg v-else-if="page.slug === 'testimonials'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 15a3 3 0 0 1-3 3H9l-5 3v-6a3 3 0 0 1-1-2.25V7a3 3 0 0 1 3-3h11a3 3 0 0 1 3 3Z"/><path d="M8 9h.01M12 9h.01M16 9h.01"/></svg>
                         <svg v-else-if="page.slug.startsWith('social-')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 1 0-7l1.5-1.5a5 5 0 0 1 7 7L17 13"/><path d="M14 11a5 5 0 0 1 0 7l-1.5 1.5a5 5 0 1 1-7-7L7 11"/></svg>
                         <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z" />
@@ -175,6 +176,7 @@
             </div>
 
           </div>
+          <p class="search-command-hint">Fun fact: type <kbd>.all</kbd> to show everything</p>
         </div>
       </div>
     </transition>
@@ -185,7 +187,6 @@
 import { computed, h, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { RouterLink, useRouter, useRoute } from "vue-router";
 import SmoothCursor from "@/components/SmoothCursor.vue";
-import { socialSearchPages } from "@/lib/socialSearchPages";
 import { matchesSearch } from "@/lib/searchMatch";
 
 const router = useRouter();
@@ -210,11 +211,7 @@ const pages = [
   { slug: "assets", label: "Open Source", href: "/opensource" },
   { slug: "developers", label: "Developers", href: "/Team" },
   { slug: "links", label: "Links", href: "/links" },
-  { slug: "featured", label: "Featured Work", href: "/#A3" },
   { slug: "testimonials", label: "Testimonials", href: "/testimonials" },
-  { slug: "contact", label: "Contact", href: "/#FooterMain" },
-  { slug: "tos", label: "TOS", href: "#tos" },
-  ...socialSearchPages,
 ];
 
 const translations: Record<string, Record<string, string>> = {
@@ -252,7 +249,7 @@ type JsonLoader = () => Promise<unknown>;
 
 const filteredPages = computed(() => {
   const q = searchQuery.value.trim().toLowerCase();
-  if (!q) return pages.filter((page) => !page.searchOnly);
+  if (!q || q === ".all") return pages.filter((page) => !page.searchOnly);
   const compactQ = q.replace(/[^a-z0-9]/g, "");
   return pages.filter((page) => matchesSearch(q, [page.label, page.slug, page.href, page.keywords]));
 });
@@ -263,7 +260,7 @@ const pagesShouldOpen = computed(
 
 const filteredOpenSourceProjects = computed(() => {
   const q = searchQuery.value.trim().toLowerCase();
-  if (!q) return openSourceProjects;
+  if (!q || q === ".all") return openSourceProjects;
   const compactQ = q.replace(/[^a-z0-9]/g, "");
   const categoryQuery = ["project", "projects", "open source", "opensource", "asset", "assets", "code"].some(
     (term) => q && (q.includes(term) || term.includes(q)),
