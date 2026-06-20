@@ -360,6 +360,8 @@
         <RouterLink to="/" role="menuitem" data-cursor-hover @click="menuOpen = false">{{ t('topAbout') }}</RouterLink>
         <RouterLink to="/opensource" role="menuitem" data-cursor-hover @click="menuOpen = false">{{ t('topAssets') }}</RouterLink>
         <RouterLink to="/Team" role="menuitem" data-cursor-hover @click="menuOpen = false">{{ t('topDevelopers') }}</RouterLink>
+        <RouterLink to="/links" role="menuitem" data-cursor-hover @click="menuOpen = false">{{ t('pageLinks') }}</RouterLink>
+        <RouterLink to="/testimonials" role="menuitem" data-cursor-hover @click="menuOpen = false">Testimonials</RouterLink>
         <a href="#tos" role="menuitem" data-cursor-hover>{{ t('topTOS') }}</a>
       </div>
     </div>
@@ -405,7 +407,7 @@
                     <path d="M8.9 1.5 L17 12 L8.9 22.5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
                   </svg>
                   <span class="flag header-flag" aria-hidden="true">
-                    <span class="theme-emoji">↗</span>
+                    <svg class="pages-grid-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/></svg>
                   </span>
                   <span class="lang-title">{{ t('pagesLabel') }}</span>
                 </button>
@@ -449,6 +451,7 @@
                               <path d="M10 13a5 5 0 0 1 0-7l1.5-1.5a5 5 0 0 1 7 7L17 13" />
                               <path d="M14 11a5 5 0 0 1 0 7L12.5 19.5a5 5 0 1 1-7-7L7 11" />
                             </svg>
+                            <svg v-else-if="page.slug.startsWith('social-')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 1 0-7l1.5-1.5a5 5 0 0 1 7 7L17 13"/><path d="M14 11a5 5 0 0 1 0 7l-1.5 1.5a5 5 0 1 1-7-7L7 11"/></svg>
                             <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                               <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z" />
                               <path d="M14 2v5h5" />
@@ -2175,6 +2178,8 @@ body{
 import { computed, h, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import SmoothCursor from '../components/SmoothCursor.vue';
+import { socialSearchPages } from '@/lib/socialSearchPages';
+import { matchesSearch } from '@/lib/searchMatch';
 import PatternBackground from '../components/ui/pattern-background/PatternBackground.vue';
 import {
   PATTERN_BACKGROUND_DIRECTION,
@@ -2222,8 +2227,12 @@ const pages = [
   { slug: "home", label: "Home", href: "/" },
   { slug: "assets", label: "Open Source", href: "/opensource" },
   { slug: "developers", label: "Developers", href: "/Team" },
-  { slug: "links", label: "Links", href: "#links" },
+  { slug: "links", label: "Links", href: "/links" },
+  { slug: "featured", label: "Featured Work", href: "/#A3" },
+  { slug: "testimonials", label: "Testimonials", href: "/testimonials" },
+  { slug: "contact", label: "Contact", href: "/#FooterMain" },
   { slug: "tos", label: "TOS", href: "#tos" },
+  ...socialSearchPages,
 ];
 
 const themeOptions = [
@@ -2923,7 +2932,7 @@ const filteredThemes = computed(() => {
 
 const filteredPages = computed(() => {
   const q = searchQuery.value.trim().toLowerCase();
-  if (!q) return pages;
+  if (!q) return pages.filter((page) => !page.searchOnly);
   const compactQ = q.replace(/[^a-z0-9]/g, "");
   const categoryQuery = [
     'page',
@@ -2932,15 +2941,8 @@ const filteredPages = computed(() => {
     'navigation',
     'nav',
   ].some((term) => q && (q.includes(term) || term.includes(q)));
-  if (categoryQuery) return pages;
-  return pages.filter((page) => {
-    const values = [page.label, page.slug, page.href].map((value) => value.toLowerCase());
-    return values.some(
-      (value) =>
-        value.includes(q) ||
-        value.replace(/[^a-z0-9]/g, "").includes(compactQ),
-    );
-  });
+  if (categoryQuery) return pages.filter((page) => !page.searchOnly);
+  return pages.filter((page) => matchesSearch(q, [page.label, page.slug, page.href, page.keywords]));
 });
 
 const filteredOpenSourceProjects = computed(() => {

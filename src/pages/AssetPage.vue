@@ -35,6 +35,8 @@
         {{ t("topAssets") }}
       </RouterLink>
       <RouterLink to="/Team" role="menuitem" data-cursor-hover @click="closeMenu">{{ t("topDevelopers") }}</RouterLink>
+      <RouterLink to="/links" role="menuitem" data-cursor-hover @click="closeMenu">{{ t("pageLinks") }}</RouterLink>
+      <RouterLink to="/testimonials" role="menuitem" data-cursor-hover @click="closeMenu">Testimonials</RouterLink>
       <RouterLink :to="{ path: '/', hash: '#tos' }" role="menuitem" data-cursor-hover @click="closeMenu">
         {{ t("topTOS") }}
       </RouterLink>
@@ -85,7 +87,7 @@
                   <path d="M8.9 1.5 L17 12 L8.9 22.5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
                 <span class="flag header-flag" aria-hidden="true">
-                  <span class="theme-emoji">↗</span>
+                  <svg class="pages-grid-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/></svg>
                 </span>
                 <span class="lang-title">{{ t('pagesLabel') }}</span>
               </button>
@@ -125,11 +127,12 @@
                             <path d="M4 17l4 4" />
                             <path d="M15.5 3.5a2.12 2.12 0 0 1 3 3L11 14l-4 1 1-4 7.5-7.5Z" />
                           </svg>
-                          <svg v-else-if="page.slug === 'links'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg v-else-if="page.slug === 'links'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M10 13a5 5 0 0 1 0-7l1.5-1.5a5 5 0 0 1 7 7L17 13" />
                             <path d="M14 11a5 5 0 0 1 0 7L12.5 19.5a5 5 0 1 1-7-7L7 11" />
-                          </svg>
-                          <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        </svg>
+                        <svg v-else-if="page.slug.startsWith('social-')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 1 0-7l1.5-1.5a5 5 0 0 1 7 7L17 13"/><path d="M14 11a5 5 0 0 1 0 7l-1.5 1.5a5 5 0 1 1-7-7L7 11"/></svg>
+                        <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z" />
                             <path d="M14 2v5h5" />
                             <path d="M9 13h6" />
@@ -182,6 +185,8 @@
 import { computed, h, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { RouterLink, useRouter, useRoute } from "vue-router";
 import SmoothCursor from "@/components/SmoothCursor.vue";
+import { socialSearchPages } from "@/lib/socialSearchPages";
+import { matchesSearch } from "@/lib/searchMatch";
 
 const router = useRouter();
 const route = useRoute();
@@ -204,8 +209,12 @@ const pages = [
   { slug: "home", label: "Home", href: "/" },
   { slug: "assets", label: "Open Source", href: "/opensource" },
   { slug: "developers", label: "Developers", href: "/Team" },
-  { slug: "links", label: "Links", href: "#links" },
+  { slug: "links", label: "Links", href: "/links" },
+  { slug: "featured", label: "Featured Work", href: "/#A3" },
+  { slug: "testimonials", label: "Testimonials", href: "/testimonials" },
+  { slug: "contact", label: "Contact", href: "/#FooterMain" },
   { slug: "tos", label: "TOS", href: "#tos" },
+  ...socialSearchPages,
 ];
 
 const translations: Record<string, Record<string, string>> = {
@@ -243,16 +252,9 @@ type JsonLoader = () => Promise<unknown>;
 
 const filteredPages = computed(() => {
   const q = searchQuery.value.trim().toLowerCase();
-  if (!q) return pages;
+  if (!q) return pages.filter((page) => !page.searchOnly);
   const compactQ = q.replace(/[^a-z0-9]/g, "");
-  return pages.filter((page) => {
-    const values = [page.label, page.slug, page.href].map((value) => value.toLowerCase());
-    return values.some(
-      (value) =>
-        value.includes(q) ||
-        value.replace(/[^a-z0-9]/g, "").includes(compactQ),
-    );
-  });
+  return pages.filter((page) => matchesSearch(q, [page.label, page.slug, page.href, page.keywords]));
 });
 
 const pagesShouldOpen = computed(

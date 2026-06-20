@@ -1,11 +1,15 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
-import HomePage from '../pages/HomePage.vue';
-import DevelopersPage from '../pages/DevelopersPage.vue';
-import DeveloperProfilePage from '../pages/DeveloperProfilePage.vue';
-import NotFoundPage from '../pages/NotFoundPage.vue';
-import AssetPage from '../pages/AssetPage.vue';
-import OpenSourcePage from '../pages/OpenSourcePage.vue';
+import { finishNavigation, setNavigationStep, startNavigation } from '../lib/navigationLoader';
+
+const HomePage = () => import('../pages/HomePage.vue');
+const DevelopersPage = () => import('../pages/DevelopersPage.vue');
+const DeveloperProfilePage = () => import('../pages/DeveloperProfilePage.vue');
+const NotFoundPage = () => import('../pages/NotFoundPage.vue');
+const AssetPage = () => import('../pages/AssetPage.vue');
+const OpenSourcePage = () => import('../pages/OpenSourcePage.vue');
+const LinksPage = () => import('../pages/LinksPage.vue');
+const TestimonialsPage = () => import('../pages/TestimonialsPage.vue');
 
 const HISTORY_KEY = 'zantixHistory';
 
@@ -44,6 +48,18 @@ const router = createRouter({
       meta: { label: 'Open Source' },
     },
     {
+      path: '/links',
+      name: 'links',
+      component: LinksPage,
+      meta: { label: 'Links' },
+    },
+    {
+      path: '/testimonials',
+      name: 'testimonials',
+      component: TestimonialsPage,
+      meta: { label: 'Testimonials' },
+    },
+    {
       path: '/Team/:group/:slug',
       name: 'developer-profile',
       component: DeveloperProfilePage,
@@ -73,11 +89,12 @@ const router = createRouter({
     if (to.hash) {
       return { el: to.hash, behavior: 'smooth' };
     }
-    return { top: 0, behavior: 'smooth' };
+    return { top: 0 };
   },
 });
 
 router.beforeEach((to, from, next) => {
+  startNavigation(to.meta?.label || (typeof to.name === 'string' ? to.name : 'Page'));
   if (from && from.path) {
     const label =
       (from.meta && from.meta.label) ||
@@ -86,6 +103,23 @@ router.beforeEach((to, from, next) => {
     addHistoryEntry(from.fullPath, label);
   }
   next();
+});
+
+router.beforeResolve(() => {
+  setNavigationStep(1);
+});
+
+router.afterEach(() => {
+  setNavigationStep(2);
+  window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(() => {
+      finishNavigation();
+    });
+  });
+});
+
+router.onError(() => {
+  finishNavigation();
 });
 
 export default router;

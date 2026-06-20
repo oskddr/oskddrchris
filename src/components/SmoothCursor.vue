@@ -5,6 +5,8 @@ import { useEventListener, useTimeout } from "@vueuse/core";
 import { onMounted, onUnmounted, ref } from "vue";
 import DefaultCursor from "./DefaultCursor.vue";
 
+let activeCursorInstances = 0;
+
 interface Position {
   x: number;
   y: number;
@@ -148,6 +150,8 @@ function throttledMouseMove(e: MouseEvent) {
 }
 
 onMounted(() => {
+  activeCursorInstances += 1;
+  document.documentElement.classList.add("smooth-cursor-active");
   document.body.style.cursor = "none";
   useEventListener(window, "mousemove", throttledMouseMove);
   hoverRafId = requestAnimationFrame(updateCursorHover);
@@ -160,7 +164,11 @@ onUnmounted(() => {
     hoverTarget.classList.remove("is-cursor-hover");
     hoverTarget = null;
   }
-  document.body.style.cursor = "default";
+  activeCursorInstances = Math.max(0, activeCursorInstances - 1);
+  if (activeCursorInstances === 0) {
+    document.documentElement.classList.remove("smooth-cursor-active");
+    document.body.style.cursor = "default";
+  }
 });
 </script>
 
@@ -194,4 +202,9 @@ onUnmounted(() => {
   </Teleport>
 </template>
 
-<style scoped></style>
+<style scoped>
+:global(html.smooth-cursor-active),
+:global(html.smooth-cursor-active *) {
+  cursor: none !important;
+}
+</style>

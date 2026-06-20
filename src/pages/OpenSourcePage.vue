@@ -16,7 +16,14 @@
       />
       <span class="kbd-hint"><span class="kbd">/</span></span>
     </label>
-    <button id="hamburger" aria-label="Menu" @click="menuOpen = !menuOpen">
+    <button
+      id="hamburger"
+      type="button"
+      aria-label="Menu"
+      :aria-expanded="menuOpen"
+      :class="{ 'is-open': menuOpen }"
+      @click.stop="toggleMenu"
+    >
       <span id="bar1"></span>
       <span id="bar2"></span>
       <span id="bar3"></span>
@@ -25,7 +32,9 @@
       <RouterLink to="/" role="menuitem" @click="menuOpen = false">About Zantix</RouterLink>
       <RouterLink to="/opensource" role="menuitem" @click="menuOpen = false">Open Source</RouterLink>
       <RouterLink to="/Team" role="menuitem" @click="menuOpen = false">Zantix Team</RouterLink>
-      <a href="#" role="menuitem">Zantix TOS</a>
+      <RouterLink to="/links" role="menuitem" @click="menuOpen = false">Links</RouterLink>
+      <RouterLink to="/testimonials" role="menuitem" @click="menuOpen = false">Testimonials</RouterLink>
+      <a href="#" role="menuitem" @click="menuOpen = false">Zantix TOS</a>
     </div>
   </div>
 
@@ -279,7 +288,7 @@
                   <path d="M8.9 1.5 L17 12 L8.9 22.5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
                 <span class="flag header-flag" aria-hidden="true">
-                  <span class="theme-emoji">↗</span>
+                  <svg class="pages-grid-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/></svg>
                 </span>
                 <span class="lang-title">Pages</span>
               </button>
@@ -322,6 +331,7 @@
                             <path d="M10 13a5 5 0 0 1 0-7l1.5-1.5a5 5 0 0 1 7 7L17 13" />
                             <path d="M14 11a5 5 0 0 1 0 7L12.5 19.5a5 5 0 1 1-7-7L7 11" />
                           </svg>
+                          <svg v-else-if="page.slug.startsWith('social-')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 1 0-7l1.5-1.5a5 5 0 0 1 7 7L17 13"/><path d="M14 11a5 5 0 0 1 0 7l-1.5 1.5a5 5 0 1 1-7-7L7 11"/></svg>
                           <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z" />
                             <path d="M14 2v5h5" />
@@ -402,6 +412,8 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { RouterLink, useRouter } from "vue-router";
 import SmoothCursor from "../components/SmoothCursor.vue";
+import { socialSearchPages } from "@/lib/socialSearchPages";
+import { matchesSearch } from "@/lib/searchMatch";
 import logoImage from "@/assets/img/logo/Logo.png";
 
 const router = useRouter();
@@ -438,8 +450,12 @@ const pages = [
   { slug: "home", label: "Home", href: "/" },
   { slug: "open-source", label: "Open Source", href: "/opensource" },
   { slug: "developers", label: "Developers", href: "/Team" },
-  { slug: "links", label: "Links", href: "#links" },
+  { slug: "links", label: "Links", href: "/links" },
+  { slug: "featured", label: "Featured Work", href: "/#A3" },
+  { slug: "testimonials", label: "Testimonials", href: "/testimonials" },
+  { slug: "contact", label: "Contact", href: "/#FooterMain" },
   { slug: "tos", label: "TOS", href: "#tos" },
+  ...socialSearchPages,
 ];
 
 const crossoverSpots = ["top-left", "top-right", "bottom-left", "bottom-right"];
@@ -2060,20 +2076,13 @@ const copyAssetCode = async (asset: { code: string; slug: string; luau: string; 
 
 const filteredPages = computed(() => {
   const q = searchQuery.value.trim().toLowerCase();
-  if (!q) return pages;
+  if (!q) return pages.filter((page) => !page.searchOnly);
   const compactQ = q.replace(/[^a-z0-9]/g, "");
   const categoryQuery = ["page", "pages", "site", "navigation", "nav"].some(
     (term) => q && (q.includes(term) || term.includes(q)),
   );
-  if (categoryQuery) return pages;
-  return pages.filter((page) => {
-    const values = [page.label, page.slug, page.href].map((value) => value.toLowerCase());
-    return values.some(
-      (value) =>
-        value.includes(q) ||
-        value.replace(/[^a-z0-9]/g, "").includes(compactQ),
-    );
-  });
+  if (categoryQuery) return pages.filter((page) => !page.searchOnly);
+  return pages.filter((page) => matchesSearch(q, [page.label, page.slug, page.href, page.keywords]));
 });
 
 const filteredOpenSourceProjects = computed(() => {
@@ -2137,6 +2146,10 @@ const projectsShouldOpen = computed(
   () => projectsOpen.value || (searchQuery.value.trim() && filteredOpenSourceProjects.value.length > 0),
 );
 
+const toggleMenu = () => {
+  menuOpen.value = !menuOpen.value;
+};
+
 const handleKeydown = (e: KeyboardEvent) => {
   if (e.key === "/" && !e.metaKey && !e.ctrlKey && !e.altKey) {
     const active = document.activeElement as HTMLElement | null;
@@ -2160,9 +2173,9 @@ onMounted(() => {
   applyTheme();
   prefersDark.addEventListener("change", handleSchemeChange);
   window.addEventListener("keydown", handleKeydown);
-  window.setTimeout(() => {
+  window.requestAnimationFrame(() => {
     topbarVisible.value = true;
-  }, 180);
+  });
   if (window.location.hash.startsWith("#project-")) {
     window.setTimeout(() => {
       scrollToProject(window.location.hash.slice(1));
@@ -2259,14 +2272,6 @@ onBeforeUnmount(() => {
 #topbarMain[data-ready="true"] {
   transform: translate(-50%, 0);
   opacity: 1;
-  animation: dropIn 780ms cubic-bezier(.21, 1.01, .32, 1.02);
-}
-
-@keyframes dropIn {
-  0% { transform: translate(-50%, -140%) scale(0.96); filter: blur(3px); }
-  62% { transform: translate(-50%, 6%) scale(1.02); }
-  84% { transform: translate(-50%, -2%) scale(0.998); }
-  100% { transform: translate(-50%, 0) scale(1); filter: blur(0); }
 }
 
 #topbarMain .topbar-logo{
@@ -2369,6 +2374,23 @@ onBeforeUnmount(() => {
 #bar2{ animation-delay: 140ms; }
 #bar3{ animation-delay: 280ms; }
 
+#hamburger.is-open span{
+  animation: none;
+  opacity: 1;
+}
+
+#hamburger.is-open #bar1{
+  transform: translateY(6px) rotate(45deg);
+}
+
+#hamburger.is-open #bar2{
+  opacity: 0;
+}
+
+#hamburger.is-open #bar3{
+  transform: translateY(-6px) rotate(-45deg);
+}
+
 @keyframes barSlideIn{
   0%{ opacity: 0; transform: translateX(8px); }
   100%{ opacity: 1; transform: translateX(0); }
@@ -2414,6 +2436,85 @@ onBeforeUnmount(() => {
   opacity: 1;
   transform: translateY(0) scale(1);
   pointer-events: auto;
+}
+
+/* The modal is teleported to body, so this page owns its complete visual shell. */
+.fade-enter-active,
+.fade-leave-active{
+  transition: opacity 200ms ease;
+}
+
+.fade-enter-from,
+.fade-leave-to{
+  opacity: 0;
+}
+
+.search-modal{
+  position: fixed;
+  inset: 0;
+  z-index: 999998;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1.25rem, 4vw, 2.5rem);
+  overflow: hidden;
+  background: var(--overlay-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.search-card{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: min(620px, 94vw);
+  max-height: min(78vh, 720px);
+  padding: 1.4rem;
+  overflow: auto;
+  border: 1px solid var(--ui-border);
+  border-radius: 1rem;
+  background: var(--card-bg);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.48);
+  color: var(--ui-text);
+  user-select: text;
+  overscroll-behavior: contain;
+}
+
+.blank-card{
+  align-items: stretch;
+  justify-content: flex-start;
+}
+
+.search-card__input{
+  position: sticky;
+  top: -1.4rem;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+  padding: 1.4rem 0 0.7rem;
+  border-bottom: 1px solid var(--input-border);
+  background: var(--card-bg);
+}
+
+.search-card__input svg{
+  width: 20px;
+  height: 20px;
+  opacity: 0.9;
+}
+
+.search-card__input input{
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ui-text);
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  font-size: 1rem;
 }
 
 .opensource-page{
