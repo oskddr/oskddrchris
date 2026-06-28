@@ -1,6 +1,8 @@
 <template>
   <div id="topbarMain" :data-ready="topbarVisible">
-    <img class="topbar-logo" src="@/assets/img/logo/Logo.png" :alt="t('heroTitle')">
+    <RouterLink class="topbar-logo-link" to="/" aria-label="Home" data-cursor-hover>
+      <img class="topbar-logo" src="@/assets/img/logo/Logo.png" :alt="t('heroTitle')">
+    </RouterLink>
     <label class="top-search" aria-label="Search" @click.stop="openSearchModal">
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="2" fill="none" />
@@ -16,20 +18,20 @@
       />
       <span class="kbd-hint"><span class="kbd">/</span></span>
     </label>
-    <button id="hamburger" aria-label="Menu" @click="menuOpen = !menuOpen">
+    <button id="hamburger" aria-label="Menu" :aria-expanded="menuOpen" :class="{ 'is-open': menuOpen }" @click.stop="toggleMenu">
       <span id="bar1"></span>
       <span id="bar2"></span>
       <span id="bar3"></span>
     </button>
-    <div id="topbarMenu" :data-open="menuOpen">
-      <a href="#" role="menuitem">{{ t("topAbout") }}</a>
-      <RouterLink to="/opensource" role="menuitem" @click="menuOpen = false">{{ t("topAssets") }}</RouterLink>
-      <RouterLink to="/Team" role="menuitem" @click="menuOpen = false">
+    <div id="topbarMenu" :data-open="menuOpen" @pointermove="keepMenuOpen" @focusin="keepMenuOpen" @keydown="keepMenuOpen">
+      <RouterLink to="/about" role="menuitem" @click="closeMenu">{{ t("topAbout") }}</RouterLink>
+      <RouterLink to="/Team" role="menuitem" @click="closeMenu">
         {{ t("topDevelopers") }}
       </RouterLink>
-      <RouterLink to="/links" role="menuitem" @click="menuOpen = false">{{ t("pageLinks") }}</RouterLink>
-      <RouterLink to="/testimonials" role="menuitem" @click="menuOpen = false">Testimonials</RouterLink>
-      <a href="#" role="menuitem">{{ t("topTOS") }}</a>
+      <RouterLink to="/opensource" role="menuitem" @click="closeMenu">{{ t("topAssets") }}</RouterLink>
+      <RouterLink to="/reviews/" role="menuitem" @click="closeMenu">Reviews</RouterLink>
+      <RouterLink to="/links" role="menuitem" @click="closeMenu">{{ t("pageLinks") }}</RouterLink>
+      <RouterLink to="/credits/" role="menuitem" @click="closeMenu">Credits</RouterLink>
     </div>
   </div>
 
@@ -45,14 +47,13 @@
     <div id="main" :data-ready="siteReady">
       <img class="hero-logo" src="@/assets/img/logo/Logo.png" alt="">
       <h1>{{ t("heroTitle") }}</h1>
-      <h2>{{ t("heroSubtitle") }}</h2>
+      <h2 v-if="t('heroSubtitle')">{{ t("heroSubtitle") }}</h2>
     </div>
   </div>
 
   <div id="A2">
-    <section class="a2-wrap">
+    <section class="a2-wrap" data-reveal="fade-up">
       <div class="a2-header">
-        <p class="eyebrow">{{ t("builtTo") }}</p>
         <h3>
           {{ t("shipWith") }}
           <FlipWords
@@ -61,13 +62,11 @@
             class="a2-flip"
           />
         </h3>
-        <p class="lede">
-          {{ t("heroSubtitle") }}
-        </p>
+        <p class="lede">{{ t("experienceSubtitle") }}</p>
       </div>
 
-      <div class="feature-list">
-        <div class="feature-list-item">
+      <div class="feature-list" data-reveal-stagger="0.06">
+        <div class="feature-list-item" data-reveal="fade-up">
           <span class="dot" aria-hidden="true"></span>
           <div class="feature-text">
             <h4>{{ t("feature1Title") }}</h4>
@@ -75,7 +74,7 @@
           </div>
         </div>
         <div class="feature-divider"></div>
-        <div class="feature-list-item">
+        <div class="feature-list-item" data-reveal="fade-up">
           <span class="dot" aria-hidden="true"></span>
           <div class="feature-text">
             <h4>{{ t("feature2Title") }}</h4>
@@ -83,19 +82,11 @@
           </div>
         </div>
         <div class="feature-divider"></div>
-        <div class="feature-list-item">
+        <div class="feature-list-item" data-reveal="fade-up">
           <span class="dot" aria-hidden="true"></span>
           <div class="feature-text">
             <h4>{{ t("feature3Title") }}</h4>
             <p>{{ t("feature3Desc") }}</p>
-          </div>
-        </div>
-        <div class="feature-divider"></div>
-        <div class="feature-list-item">
-          <span class="dot" aria-hidden="true"></span>
-          <div class="feature-text">
-            <h4>{{ t("feature4Title") }}</h4>
-            <p>{{ t("feature4Desc") }}</p>
           </div>
         </div>
       </div>
@@ -103,23 +94,21 @@
   </div>
 
   <div id="A3">
-    <section class="a2-wrap">
+    <section class="a2-wrap" data-reveal="fade-up">
       <div class="a2-header">
-        <p class="eyebrow">Here are some</p>
         <h3>
           Daily featured works
         </h3>
-        <p class="lede">
-          {{ t("heroSubtitle") }}
-        </p>
+        <p class="lede">{{ t("featuredWorksSubtitle") }}</p>
       </div>
 
-      <div class="a3-asset-grid" v-if="assetsRevealed">
+      <div class="a3-asset-grid" v-if="assetsRevealed" data-reveal-stagger="0.06">
         <article
           v-for="asset in featuredAssets"
           :key="asset.name"
           class="a3-asset-card"
           data-cursor-hover
+          data-reveal="fade-up"
           @click="openAssetModal(asset)"
         >
           <h4>{{ asset.name }}</h4>
@@ -157,21 +146,23 @@
   </teleport>
 
   <div id="A6">
-    <section class="testimonials-wrap">
+    <section class="reviews-wrap">
       <div class="section-head" data-reveal="fade-up">
-        <p class="eyebrow">{{ t("testimonialsEyebrow") }}</p>
-        <h3>{{ t("testimonialsTitle") }}</h3>
-        <p class="lede">{{ t("testimonialsDescription") }}</p>
+        <p class="eyebrow">{{ t("reviewsEyebrow") }}</p>
+        <h3>{{ t("reviewsTitle") }}</h3>
+        <p class="lede">{{ t("reviewsDescription") }}</p>
       </div>
       <div class="testimonial-grid" data-reveal="fade-up">
-        <figure
+        <RouterLink
           class="testimonial-card"
-          v-for="review in homeTestimonials"
+          v-for="review in homeReviews"
           :key="review.id"
+          to="/reviews/"
+          data-cursor-hover
         >
           <div class="testimonial-stars" aria-label="5 out of 5 stars">★★★★★</div>
           <blockquote>{{ review.quote }}</blockquote>
-          <figcaption>
+          <span class="testimonial-caption">
             <span
               class="testimonial-avatar"
               :data-img="Boolean(review.image)"
@@ -189,11 +180,11 @@
               <span class="name">{{ review.name }}</span>
               <span class="role">{{ review.role }}</span>
             </span>
-          </figcaption>
-        </figure>
+          </span>
+        </RouterLink>
       </div>
       <div class="testimonial-cta" data-reveal="fade-up">
-        <RouterLink class="testimonial-link" to="/testimonials" data-cursor-hover>
+        <RouterLink class="testimonial-link" to="/reviews/" data-cursor-hover>
           <span>View all reviews</span>
           <span class="testimonial-link__arrow" aria-hidden="true">→</span>
         </RouterLink>
@@ -340,7 +331,7 @@
                             <path d="M10 13a5 5 0 0 1 0-7l1.5-1.5a5 5 0 0 1 7 7L17 13" />
                             <path d="M14 11a5 5 0 0 1 0 7L12.5 19.5a5 5 0 1 1-7-7L7 11" />
                           </svg>
-                          <svg v-else-if="page.slug === 'testimonials'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 15a3 3 0 0 1-3 3H9l-5 3v-6a3 3 0 0 1-1-2.25V7a3 3 0 0 1 3-3h11a3 3 0 0 1 3 3Z"/><path d="M8 9h.01M12 9h.01M16 9h.01"/></svg>
+                          <svg v-else-if="page.slug === 'reviews'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 15a3 3 0 0 1-3 3H9l-5 3v-6a3 3 0 0 1-1-2.25V7a3 3 0 0 1 3-3h11a3 3 0 0 1 3 3Z"/><path d="M8 9h.01M12 9h.01M16 9h.01"/></svg>
                           <svg v-else-if="page.slug.startsWith('social-')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 1 0-7l1.5-1.5a5 5 0 0 1 7 7L17 13"/><path d="M14 11a5 5 0 0 1 0 7l-1.5 1.5a5 5 0 1 1-7-7L7 11"/></svg>
                           <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z" />
@@ -911,7 +902,7 @@ h1,h2,h3,h4,h5,h6{
   gap: clamp(1rem, 2.4vw, 1.6rem);
 }
 
-.testimonials-wrap{
+.reviews-wrap{
   max-width: 1120px;
   margin: 0 auto;
   display: grid;
@@ -1132,18 +1123,22 @@ h1,h2,h3,h4,h5,h6{
 
 .testimonial-card{
   position: relative;
+  color: inherit;
+  text-decoration: none;
   border-radius: 14px;
-  padding: 1rem 1.05rem;
+  padding: 0.85rem 0.95rem;
   background: linear-gradient(180deg, rgba(4,4,6,0.95), rgba(6,6,8,0.88));
   box-shadow: 0 14px 38px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(255,255,255,0.08);
   border: 1px solid rgba(255,255,255,0.12);
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
-  min-height: 165px;
-  max-width: 410px;
+  gap: 0.5rem;
+  min-height: 142px;
+  max-height: 190px;
+  max-width: 350px;
   width: 100%;
   margin: 0 auto;
+  overflow: hidden;
   transition: transform 200ms ease, box-shadow 220ms ease, border-color 220ms ease;
 }
 
@@ -1156,20 +1151,23 @@ h1,h2,h3,h4,h5,h6{
 .testimonial-stars{
   color: #f4c84a;
   letter-spacing: 0.08em;
-  font-size: 0.9rem;
+  font-size: 0.78rem;
   text-shadow: 0 2px 6px rgba(0,0,0,0.4);
 }
 
 .testimonial-card blockquote{
-  font-size: 0.94rem;
-  line-height: 1.45;
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 0.86rem;
+  line-height: 1.38;
   color: rgba(245,247,255,0.88);
-  text-wrap: balance;
   max-width: 44ch;
   margin: 0;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
 }
 
-.testimonial-card figcaption{
+.testimonial-caption{
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -1178,8 +1176,8 @@ h1,h2,h3,h4,h5,h6{
 
 .testimonial-avatar{
   position: relative;
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   display: inline-flex;
   align-items: center;
@@ -1213,18 +1211,19 @@ h1,h2,h3,h4,h5,h6{
 .testimonial-meta{
   display: flex;
   flex-direction: column;
-  gap: 0.05rem;
+  gap: 0.03rem;
+  min-width: 0;
 }
 
 .testimonial-meta .name{
   font-weight: 700;
   color: #f5f7ff;
-  font-size: 0.88rem;
+  font-size: 0.82rem;
 }
 
 .testimonial-meta .role{
   color: rgba(255,255,255,0.68);
-  font-size: 0.8rem;
+  font-size: 0.74rem;
 }
 
 .dot-sep{
@@ -2538,6 +2537,7 @@ import type { HTMLAttributes } from "vue";
 import { useRouter } from "vue-router";
 import SmoothCursor from "../components/SmoothCursor.vue";
 import { matchesSearch } from "@/lib/searchMatch";
+import { useAutoCloseMenu } from "@/lib/useAutoCloseMenu";
 import FlipWords from "../components/FlipWords.vue";
 import { RouterLink } from "vue-router";
 import { testimonials } from "@/data/testimonials";
@@ -2645,6 +2645,7 @@ const pageLoaded = ref(false);
 const siteReady = computed(() => ready.value && pageLoaded.value);
 const topbarVisible = ref(false);
 const menuOpen = ref(false);
+const { closeMenu, keepMenuOpen, toggleMenu } = useAutoCloseMenu(menuOpen);
 const hasReachedBottom = ref(false);
 const searchInput = ref<HTMLInputElement | null>(null);
 const searchModalOpen = ref(false);
@@ -2657,10 +2658,12 @@ const searchQuery = ref("");
 const modalSearchInput = ref<HTMLInputElement | null>(null);
 const pages = [
   { slug: "home", label: "Home", href: "/" },
+  { slug: "about", label: "About me", href: "/about" },
   { slug: "assets", label: "Open Source", href: "/opensource" },
-  { slug: "developers", label: "Developers", href: "/Team" },
+  { slug: "developers", label: "Works", href: "/Team" },
   { slug: "links", label: "Links", href: "/links" },
-  { slug: "testimonials", label: "Testimonials", href: "/testimonials" },
+  { slug: "reviews", label: "Reviews", href: "/reviews/" },
+  { slug: "credits", label: "Credits", href: "/credits/" },
 ];
 const openSourceProjects = [
   { slug: "project-dna", title: "Double Helix DNA" },
@@ -2676,30 +2679,31 @@ const themeOptions = [
 ] as const;
 const translations: Record<string, Record<string, string>> = {
   en: {
-    topAbout: "About Zantix",
+    topAbout: "About me",
     topAssets: "Open Source",
-    topDevelopers: "Zantix Team",
-    topTOS: "Zantix TOS",
+    topDevelopers: "Works",
+    topTOS: "TOS",
     searchPlaceholder: "Search",
     searchMain: "Search",
     heroTitle: "oskddrchris",
-    heroSubtitle: "Design And code in synergy",
+    heroSubtitle: "",
     heroBtnAssets: "Assets",
-    heroBtnDevelopers: "Team",
+    heroBtnDevelopers: "Works",
     promoDiscount: "Launch Offer — 50% off all sales",
-    builtTo: "Quick Info",
     shipWith: "Experience In",
-    feature1Title: "Roblox Studio Scripting",
-    feature1Desc: "4 years of scripting experience in Roblox Studio.",
-    feature2Title: "UI/UX Design",
-    feature2Desc: "2 years of UI and UX experience.",
-    feature3Title: "Web Development",
-    feature3Desc: "2 years of web developing experience.",
-    feature4Title: "iOS Swift & SwiftUI",
-    feature4Desc: "Half a year of iOS development with Swift and SwiftUI.",
+    experienceSubtitle: "Focused work across websites, Roblox scripting, and interface design.",
+    feature1Title: "Web Development",
+    feature1Desc: "Responsive, practical websites built with maintainable frontend code.",
+    feature2Title: "Luau Scripting",
+    feature2Desc: "Roblox systems, gameplay logic, and clean ModuleScript workflows.",
+    feature3Title: "UI/UX",
+    feature3Desc: "Interfaces shaped around clarity, flow, and usability.",
+    feature4Title: "",
+    feature4Desc: "",
+    featuredWorksSubtitle: "A rotating selection of scripts and tools from recent portfolio work.",
     collectionsEyebrow: "Curated collections",
     collectionsTitle: "Start with a pack",
-    collectionsDescription: "Pick a themed set assembled by the Zantix team.",
+    collectionsDescription: "Pick a themed set assembled by Christopher.",
     collectionsCta: "View collection",
     collection1Title: "UI Kit Essentials",
     collection1Desc: "Buttons, inputs, modals, and layout pieces.",
@@ -2709,18 +2713,18 @@ const translations: Record<string, Record<string, string>> = {
     collection3Desc: "Loops, transitions, and motion polish.",
     collection4Title: "Gameplay Scripts",
     collection4Desc: "Core systems to kickstart development.",
-    testimonialsEyebrow: "Client reviews",
-    testimonialsTitle: "Reviews From Clients",
-    testimonialsDescription: "Reviews from developers and clients experienced in scripting, UI/UX, web, and iOS.",
-    testimonialsCta: "View product options",
-    testimonialsCardCta: "View option",
+    reviewsEyebrow: "Client reviews",
+    reviewsTitle: "What clients say",
+    reviewsDescription: "Short notes from people who worked with Christopher on scripting, UI, and development tasks.",
+    reviewsCta: "View product options",
+    reviewsCardCta: "View option",
     studioProfilesEyebrow: "Studio profiles",
     studioProfilesTitle: "Meet the teams",
     studioProfilesDescription: "Tap a studio badge to jump to their profile with owners, leads, and focus.",
     logoStudio1: "Scripting",
     logoStudio2: "UI/UX",
     logoStudio3: "Web",
-    logoStudio4: "iOS",
+    logoStudio4: "UI",
     logoStudio5: "Frontend",
     logoStudio6: "Product",
     studio1Focus: "Worlds & environments",
@@ -2758,12 +2762,12 @@ const translations: Record<string, Record<string, string>> = {
     testimonial1Role: "UI Designer & Custom Icons",
     testimonial2Quote: "The UI/UX direction made the product feel cleaner and easier for users to understand.",
     testimonial2Name: "UI/UX",
-    testimonial2Role: "Client Review",
+    testimonial2Role: "Review",
     testimonial3Quote: "The web implementation was responsive, fast, and practical to maintain.",
     testimonial3Name: "Web Development",
     testimonial3Role: "Frontend",
     testimonial4Quote: "Creates focused mobile experiences with clear navigation and native-feeling interactions.",
-    testimonial4Name: "iOS Development",
+    testimonial4Name: "UI/UX",
     testimonial4Role: "Mobile",
     testimonial5Quote: "Connects visual direction, implementation, and product thinking in one portfolio.",
     testimonial5Name: "Portfolio",
@@ -2777,8 +2781,8 @@ const translations: Record<string, Record<string, string>> = {
     testimonial8Quote: "Support replies fast and the docs are clear enough to unblock us quickly.",
     testimonial8Name: "Project Manager",
     testimonial8Role: "Production",
-    footerBrand: "Zantix",
-    footerTagline: "A personal portfolio for design, scripting, web, and iOS work.",
+    footerBrand: "Christopher Böhme",
+    footerTagline: "A personal portfolio for web development, Luau scripting, and UI/UX work.",
     footerPagesLabel: "Pages",
     footerContactsLabel: "Contacts",
     footerInfoLabel: "Profile",
@@ -2790,19 +2794,18 @@ const translations: Record<string, Record<string, string>> = {
     footerEmailLabel: "Email",
     footerDiscordLink: "#",
     footerXLink: "#",
-    footerCopyright: "© 2026 Zantix",
+    footerCopyright: "© 2026 Christopher Böhme",
     footerRights: "All rights reserved.",
     themeLabel: "Theme",
     pagesLabel: "Pages",
     pageHome: "Home",
     pageAssets: "Open Source",
-    pageDevelopers: "Team",
+    pageDevelopers: "Works",
     pageLinks: "Links",
     pageTOS: "TOS",
-    confidence: "Scripting",
-    precision: "UI/UX",
-    consistency: "Web Developing",
-    stability: "iOS Developing",
+    confidence: "Web Development",
+    precision: "Luau Scripting",
+    consistency: "UI/UX",
   },
 };
 
@@ -2811,7 +2814,6 @@ const flipWords = computed(() => [
   t("confidence") ?? "confidence",
   t("precision") ?? "precision",
   t("consistency") ?? "consistency",
-  t("stability") ?? "stability",
 ]);
 
 type FeaturedAsset = { name: string; desc: string; href: string };
@@ -2880,7 +2882,7 @@ const applyScrollAnimations = () => {
         }
       });
     },
-    { threshold: 0.18, rootMargin: "0px 0px -12% 0px" },
+    { threshold: 0.01, rootMargin: '0px 0px 0px 0px' },
   );
   revealObserver.value = observer;
   elements.forEach((el) => observer.observe(el));
@@ -2895,7 +2897,7 @@ const refreshScrollAnimations = () => {
   });
 };
 
-const homeTestimonials = (() => {
+const homeReviews = (() => {
   const shuffled = [...testimonials];
   for (let index = shuffled.length - 1; index > 0; index -= 1) {
     const randomIndex = Math.floor(Math.random() * (index + 1));

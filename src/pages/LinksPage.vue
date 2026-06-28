@@ -3,6 +3,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router';
 import SmoothCursor from '@/components/SmoothCursor.vue';
 import { matchesSearch } from '@/lib/searchMatch';
+import { useAutoCloseMenu } from '@/lib/useAutoCloseMenu';
 
 const router = useRouter();
 const route = useRoute();
@@ -16,6 +17,7 @@ const previousOverflow = ref(null);
 const pagesOpen = ref(true);
 const projectsOpen = ref(false);
 const highlightedSocial = ref('');
+const { closeMenu, keepMenuOpen, toggleMenu } = useAutoCloseMenu(menuOpen);
 let highlightTimer;
 
 function applyStoredTheme() {
@@ -28,10 +30,12 @@ function applyStoredTheme() {
 
 const pages = [
   { slug: 'home', label: 'Home', href: '/' },
+  { slug: 'about', label: 'About me', href: '/about' },
   { slug: 'open-source', label: 'Open Source', href: '/opensource' },
-  { slug: 'developers', label: 'Developers', href: '/Team' },
+  { slug: 'developers', label: 'Works', href: '/Team' },
   { slug: 'links', label: 'Links', href: '/links' },
-  { slug: 'testimonials', label: 'Testimonials', href: '/testimonials' },
+  { slug: 'reviews', label: 'Reviews', href: '/reviews/' },
+  { slug: 'credits', label: 'Credits', href: '/credits/' },
 ];
 
 const openSourceProjects = [
@@ -69,14 +73,6 @@ const socialLinks = [
   { name: 'Steam', url: 'https://steamcommunity.com/id/oskddrchris', icon: 'steam', gradient: 'linear-gradient(135deg,#66c0f4,#1b2838)' },
   { name: 'X', url: 'https://x.com/oskddrchris', icon: 'x', gradient: '#000000', featured: true },
 ];
-
-function closeMenu() {
-  menuOpen.value = false;
-}
-
-function toggleMenu() {
-  menuOpen.value = !menuOpen.value;
-}
 
 function openSearchModal() {
   menuOpen.value = false;
@@ -181,7 +177,9 @@ onBeforeUnmount(() => {
 
 <template>
   <div id="topbarMain" :data-ready="topbarVisible">
-    <img class="topbar-logo" src="@/assets/img/logo/Logo.png" alt="Zantix">
+    <RouterLink class="topbar-logo-link" to="/" aria-label="Home" data-cursor-hover>
+      <img class="topbar-logo" src="@/assets/img/logo/Logo.png" alt="Christopher Böhme">
+    </RouterLink>
     <label class="top-search" aria-label="Search" @click.stop="openSearchModal">
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="2" fill="none" />
@@ -193,13 +191,13 @@ onBeforeUnmount(() => {
     <button id="hamburger" type="button" aria-label="Menu" :aria-expanded="menuOpen" :class="{ 'is-open': menuOpen }" @click.stop="toggleMenu">
       <span id="bar1"></span><span id="bar2"></span><span id="bar3"></span>
     </button>
-    <div id="topbarMenu" :data-open="menuOpen">
-      <RouterLink to="/" role="menuitem" @click="closeMenu">About Zantix</RouterLink>
+    <div id="topbarMenu" :data-open="menuOpen" @pointermove="keepMenuOpen" @focusin="keepMenuOpen" @keydown="keepMenuOpen">
+      <RouterLink to="/about" role="menuitem" @click="closeMenu">About me</RouterLink>
+      <RouterLink to="/Team" role="menuitem" @click="closeMenu">Works</RouterLink>
       <RouterLink to="/opensource" role="menuitem" @click="closeMenu">Open Source</RouterLink>
-      <RouterLink to="/Team" role="menuitem" @click="closeMenu">Zantix Team</RouterLink>
+      <RouterLink to="/reviews/" role="menuitem" @click="closeMenu">Reviews</RouterLink>
       <RouterLink to="/links" role="menuitem" @click="closeMenu">Links</RouterLink>
-      <RouterLink to="/testimonials" role="menuitem" @click="closeMenu">Testimonials</RouterLink>
-      <RouterLink :to="{ path: '/', hash: '#tos' }" role="menuitem" @click="closeMenu">Zantix TOS</RouterLink>
+      <RouterLink to="/credits/" role="menuitem" @click="closeMenu">Credits</RouterLink>
     </div>
   </div>
 
@@ -247,15 +245,15 @@ onBeforeUnmount(() => {
   <footer id="FooterMain">
     <div class="footer-wrap">
       <div class="footer-brand">
-        <span class="footer-title">Zantix</span>
-        <span class="footer-meta">A personal portfolio for design, scripting, web, and iOS work.</span>
+        <span class="footer-title">Christopher Böhme</span>
+        <span class="footer-meta">A personal portfolio for web development, Luau scripting, and UI/UX work.</span>
       </div>
       <div class="footer-links">
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/opensource">Open Source</RouterLink>
-        <RouterLink to="/Team">Developers</RouterLink>
+        <RouterLink to="/Team">Works</RouterLink>
       </div>
-      <span class="footer-copy">© 2026 Zantix</span>
+      <span class="footer-copy">© 2026 Christopher Böhme</span>
     </div>
   </footer>
 
@@ -293,7 +291,7 @@ onBeforeUnmount(() => {
                           <svg v-else-if="page.slug === 'open-source'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18"/><path d="m6 7 1-3h10l1 3"/><rect x="5" y="7" width="14" height="12" rx="2"/><path d="M9 11h6M9 15h6"/></svg>
                           <svg v-else-if="page.slug === 'developers'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m4 21 4-4M4 17l4 4"/><path d="M15.5 3.5a2.12 2.12 0 0 1 3 3L11 14l-4 1 1-4 7.5-7.5Z"/></svg>
                           <svg v-else-if="page.slug === 'links'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 1 0-7l1.5-1.5a5 5 0 0 1 7 7L17 13"/><path d="M14 11a5 5 0 0 1 0 7l-1.5 1.5a5 5 0 1 1-7-7L7 11"/></svg>
-                          <svg v-else-if="page.slug === 'testimonials'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 15a3 3 0 0 1-3 3H9l-5 3v-6a3 3 0 0 1-1-2.25V7a3 3 0 0 1 3-3h11a3 3 0 0 1 3 3Z"/><path d="M8 9h.01M12 9h.01M16 9h.01"/></svg>
+                          <svg v-else-if="page.slug === 'reviews'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 15a3 3 0 0 1-3 3H9l-5 3v-6a3 3 0 0 1-1-2.25V7a3 3 0 0 1 3-3h11a3 3 0 0 1 3 3Z"/><path d="M8 9h.01M12 9h.01M16 9h.01"/></svg>
                           <svg v-else-if="page.slug.startsWith('social-')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 1 0-7l1.5-1.5a5 5 0 0 1 7 7L17 13"/><path d="M14 11a5 5 0 0 1 0 7l-1.5 1.5a5 5 0 1 1-7-7L7 11"/></svg>
                           <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z"/><path d="M14 2v5h5M9 13h6M9 17h6"/></svg>
                         </span>
@@ -357,16 +355,16 @@ onBeforeUnmount(() => {
 #topbarMenu[data-open="true"] { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
 #topbarMenu a { padding: .45rem .55rem; border-radius: 10px; color: var(--ui-text); background: none; font: .95rem "Space Grotesk",sans-serif; transition: background-color 140ms ease,transform 140ms ease; }
 #topbarMenu a:hover { background: rgba(255,255,255,.08); transform: translateX(2px); }
-.links-page { position: relative; min-height: 82vh; width: 100%; overflow: hidden; padding: clamp(10rem,16vw,13rem) clamp(1.5rem,7vw,5.5rem) clamp(7rem,11vw,10rem); color: #fff; background: radial-gradient(ellipse 70% 34% at 50% -7%,rgba(255,255,255,.14),transparent 70%),linear-gradient(180deg,#090a0d 0%,#030407 46%,#010102 100%); font-family: "Space Grotesk",sans-serif; }
-.links-page::before { content: ''; position: absolute; inset: 0 0 auto; z-index: 0; height: min(68vh,680px); background-image: repeating-linear-gradient(to bottom,transparent 0,transparent 75px,rgba(255,255,255,.1) 76px,transparent 77px); mask-image: linear-gradient(to right,transparent 0,#000 7%,#000 93%,transparent 100%),linear-gradient(to bottom,#000 0,#000 82%,transparent 100%); mask-composite: intersect; pointer-events: none; }
-.links-page::after { content: ''; position: absolute; inset: 0; z-index: 0; background: linear-gradient(90deg,rgba(0,0,0,.5),transparent 18%,transparent 82%,rgba(0,0,0,.5)),linear-gradient(180deg,transparent 55%,rgba(0,0,0,.35)); pointer-events: none; }
-.links-bg { position: absolute; top: 5.5rem; left: 50%; z-index: 0; display: block; width: min(78vw,980px); height: 1px; background: linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent); box-shadow: 0 0 42px 12px rgba(255,255,255,.045); transform: translateX(-50%); pointer-events: none; }
+.links-page { position: relative; min-height: 82vh; width: 100%; overflow: hidden; padding: clamp(10rem,16vw,13rem) clamp(1.5rem,7vw,5.5rem) clamp(7rem,11vw,10rem); color: #fff; background: radial-gradient(ellipse 78% 38% at 48% -8%,rgba(242,247,255,.3),transparent 68%),radial-gradient(circle at 78% 14%,rgba(104,150,255,.18),transparent 22rem),linear-gradient(180deg,#0b0e17 0%,#05070d 48%,#010102 100%); font-family: "Space Grotesk",sans-serif; }
+.links-page::before { content: ''; position: absolute; inset: 0 0 auto; z-index: 0; height: min(68vh,680px); background-image: repeating-linear-gradient(to bottom,transparent 0,transparent 75px,rgba(218,230,255,.16) 76px,transparent 77px); mask-image: linear-gradient(to right,transparent 0,#000 7%,#000 93%,transparent 100%),linear-gradient(to bottom,#000 0,#000 82%,transparent 100%); mask-composite: intersect; pointer-events: none; }
+.links-page::after { content: ''; position: absolute; inset: 0; z-index: 0; background: linear-gradient(90deg,rgba(0,0,0,.46),transparent 18%,transparent 82%,rgba(0,0,0,.46)),linear-gradient(180deg,rgba(210,225,255,.08),transparent 34%,rgba(0,0,0,.38) 72%); pointer-events: none; }
+.links-bg { position: absolute; top: 5.5rem; left: 50%; z-index: 0; display: block; width: min(78vw,980px); height: 1px; background: linear-gradient(90deg,transparent,rgba(232,240,255,.72),transparent); box-shadow: 0 0 54px 16px rgba(111,155,255,.12); transform: translateX(-50%); pointer-events: none; }
 .links-wrap { position: relative; z-index: 1; display: grid; gap: clamp(3.5rem,7vw,5.5rem); max-width: 1160px; margin: 0 auto; }
 .links-header { display: grid; align-content: start; min-height: clamp(23rem,40vh,28rem); max-width: 800px; gap: 1rem; padding-inline: clamp(0rem,1.5vw,1rem); }
-.links-title { display: flex; flex-direction: column; gap: .06em; margin: 0; color: #fff; font: 750 clamp(2.65rem,7vw,5.7rem)/.96 Orbitron,sans-serif; letter-spacing: -.045em; text-transform: uppercase; text-wrap: balance; }
-.title-line { position: relative; display: block; width: fit-content; color: #f8fafc; }
-.title-line--accent { background: linear-gradient(90deg,#5a88ff,#c9d7ff); color: transparent; background-clip: text; -webkit-background-clip: text; }
-.links-lede { max-width: 580px; margin: .45rem 0 0; color: rgba(255,255,255,.58); font-size: clamp(.95rem,1.8vw,1.08rem); line-height: 1.7; }
+.links-title { display: flex; flex-direction: column; gap: .06em; width: min(100%, 760px); margin: 0; color: #fff; font: 750 clamp(2.65rem,7vw,5.7rem)/.96 Orbitron,sans-serif; letter-spacing: -.045em; text-transform: uppercase; text-wrap: balance; }
+.title-line { position: relative; display: block; width: fit-content; color: #f8fbff; text-shadow: 0 0 28px rgba(220,232,255,.18); }
+.title-line--accent { align-self: flex-start; margin-left: 0; background: linear-gradient(90deg,#eef5ff 0%,#8fb2ff 46%,#f8fbff 100%); color: transparent; background-clip: text; -webkit-background-clip: text; filter: drop-shadow(0 0 22px rgba(143,178,255,.2)); transform: none; }
+.links-lede { max-width: 580px; margin: .45rem 0 0; color: rgba(235,242,255,.68); font-size: clamp(.95rem,1.8vw,1.08rem); line-height: 1.7; }
 .links-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1.25rem; padding: clamp(.25rem,1vw,.75rem); }
 .link-card { position: relative; display: grid; grid-template-columns: 1fr auto; grid-template-rows: auto 1fr; gap: 1.25rem; min-height: 190px; padding: 1.55rem 1.65rem; overflow: hidden; border: 1px solid rgba(255,255,255,.12); border-radius: 12px; color: #fff; background: #030405; box-shadow: 0 18px 48px rgba(0,0,0,.32),inset 0 1px rgba(255,255,255,.025); transition: background-color 220ms ease,border-color 220ms ease,transform 220ms cubic-bezier(.22,.8,.36,1); }
 .link-card--featured { grid-column: 1 / -1; min-height: 142px; grid-template-columns: auto 1fr auto; grid-template-rows: 1fr; align-items: center; }

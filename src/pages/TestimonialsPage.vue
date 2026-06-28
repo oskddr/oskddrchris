@@ -4,6 +4,7 @@ import { RouterLink, useRouter } from 'vue-router';
 import SmoothCursor from '@/components/SmoothCursor.vue';
 import { matchesSearch } from '@/lib/searchMatch';
 import { testimonials } from '@/data/testimonials';
+import { useAutoCloseMenu } from '@/lib/useAutoCloseMenu';
 
 const router = useRouter();
 const topbarVisible = ref(false);
@@ -16,13 +17,16 @@ const pagesOpen = ref(true);
 const projectsOpen = ref(false);
 const selectedReview = ref(null);
 const reviewModalPreviousOverflow = ref(null);
+const { closeMenu, keepMenuOpen, toggleMenu } = useAutoCloseMenu(menuOpen);
 
 const pages = [
   { slug: 'home', label: 'Home', href: '/' },
+  { slug: 'about', label: 'About me', href: '/about' },
   { slug: 'open-source', label: 'Open Source', href: '/opensource' },
-  { slug: 'developers', label: 'Developers', href: '/Team' },
+  { slug: 'developers', label: 'Works', href: '/Team' },
   { slug: 'links', label: 'Links', href: '/links' },
-  { slug: 'testimonials', label: 'Testimonials', href: '/testimonials' },
+  { slug: 'reviews', label: 'Reviews', href: '/reviews/' },
+  { slug: 'credits', label: 'Credits', href: '/credits/' },
 ];
 
 const openSourceProjects = [
@@ -118,6 +122,17 @@ function closeReviewModal() {
   }
 }
 
+function scrollReviewFromHash() {
+  const hash = window.location.hash;
+  if (!hash.startsWith('#review-')) return;
+  nextTick(() => {
+    const target = document.querySelector(hash);
+    target?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    target?.classList.add('review-card--target');
+    window.setTimeout(() => target?.classList.remove('review-card--target'), 1800);
+  });
+}
+
 function handleKeydown(event) {
   if (event.key === '/' && !event.metaKey && !event.ctrlKey && !event.altKey) {
     const active = document.activeElement;
@@ -127,15 +142,21 @@ function handleKeydown(event) {
   }
   if (event.key === 'Escape' && selectedReview.value) closeReviewModal();
   else if (event.key === 'Escape' && searchModalOpen.value) closeSearchModal();
+  else if (event.key === 'Escape' && menuOpen.value) closeMenu();
 }
 
 onMounted(() => {
   window.addEventListener('keydown', handleKeydown);
-  requestAnimationFrame(() => { topbarVisible.value = true; });
+  window.addEventListener('hashchange', scrollReviewFromHash);
+  requestAnimationFrame(() => {
+    topbarVisible.value = true;
+    scrollReviewFromHash();
+  });
 });
 
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', handleKeydown);
+  window.removeEventListener('hashchange', scrollReviewFromHash);
   if (searchModalOpen.value) closeSearchModal();
   if (selectedReview.value) closeReviewModal();
 });
@@ -143,36 +164,47 @@ onBeforeUnmount(() => {
 
 <template>
   <div id="topbarMain" :data-ready="topbarVisible">
-    <img class="topbar-logo" src="@/assets/img/logo/Logo.png" alt="Zantix">
+    <RouterLink class="topbar-logo-link" to="/" aria-label="Home" data-cursor-hover>
+      <img class="topbar-logo" src="@/assets/img/logo/Logo.png" alt="Christopher Böhme">
+    </RouterLink>
     <label class="top-search" aria-label="Search" @click.stop="openSearchModal">
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="2" fill="none"/><path d="M16.5 16.5 21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
       <input type="search" placeholder="Search" readonly @focus.prevent="openSearchModal" @mousedown.prevent="openSearchModal">
       <span class="kbd">/</span>
     </label>
-    <button id="hamburger" type="button" aria-label="Menu" :aria-expanded="menuOpen" @click.stop="menuOpen = !menuOpen"><span></span><span></span><span></span></button>
-    <div id="topbarMenu" :data-open="menuOpen">
-      <RouterLink to="/" @click="menuOpen = false">About Zantix</RouterLink>
-      <RouterLink to="/opensource" @click="menuOpen = false">Open Source</RouterLink>
-      <RouterLink to="/Team" @click="menuOpen = false">Zantix Team</RouterLink>
-      <RouterLink to="/links" @click="menuOpen = false">Links</RouterLink>
-      <RouterLink to="/testimonials" @click="menuOpen = false">Testimonials</RouterLink>
+    <button id="hamburger" type="button" aria-label="Menu" :aria-expanded="menuOpen" :class="{ 'is-open': menuOpen }" @click.stop="toggleMenu"><span id="bar1"></span><span id="bar2"></span><span id="bar3"></span></button>
+    <div id="topbarMenu" :data-open="menuOpen" @pointermove="keepMenuOpen" @focusin="keepMenuOpen" @keydown="keepMenuOpen">
+      <RouterLink to="/about" @click="closeMenu">About me</RouterLink>
+      <RouterLink to="/Team" @click="closeMenu">Works</RouterLink>
+      <RouterLink to="/opensource" @click="closeMenu">Open Source</RouterLink>
+      <RouterLink to="/reviews/" @click="closeMenu">Reviews</RouterLink>
+      <RouterLink to="/links" @click="closeMenu">Links</RouterLink>
+      <RouterLink to="/credits/" @click="closeMenu">Credits</RouterLink>
     </div>
   </div>
 
-  <main class="testimonials-page">
-    <section class="reviews-hero">
+  <main class="reviews-page">
+    <section class="reviews-hero" data-reveal="fade-up">
       <div class="reviews-title">
         <span class="reviews-title__backdrop" aria-hidden="true">Client</span>
         <h1>Reviews</h1>
       </div>
     </section>
 
-    <section class="reviews-content" aria-label="Client reviews">
+    <section class="reviews-section" aria-label="Client reviews">
+      <div class="reviews-content" data-reveal-stagger="0.06">
       <figure
         v-for="(review, index) in testimonials"
         :key="review.id"
+        :id="`review-${review.id}`"
         class="review-card"
         :class="{ 'review-card--featured': index === 0 }"
+        tabindex="0"
+        data-cursor-hover
+        data-reveal="fade-up"
+        @click="openReviewModal(review)"
+        @keydown.enter.prevent="openReviewModal(review)"
+        @keydown.space.prevent="openReviewModal(review)"
       >
         <div class="review-card__top">
           <span class="stars" aria-label="5 out of 5 stars">★★★★★</span>
@@ -182,7 +214,7 @@ onBeforeUnmount(() => {
           v-if="isLongReview(review)"
           class="review-read-more"
           type="button"
-          @click="openReviewModal(review)"
+          @click.stop="openReviewModal(review)"
         >
           Read more
           <span aria-hidden="true">↗</span>
@@ -192,10 +224,14 @@ onBeforeUnmount(() => {
             <span class="avatar-fallback">?</span>
             <img v-if="review.image" :src="review.image" alt="" @error="$event.currentTarget.remove()">
           </span>
-          <span class="review-person"><strong>{{ review.name }}</strong><small>{{ review.role }}</small></span>
+          <span class="review-person">
+            <strong>{{ review.name }}</strong>
+            <small>{{ review.role }}</small>
+          </span>
           <span class="review-index">#{{ String(index + 1).padStart(3, '0') }}</span>
         </figcaption>
       </figure>
+      </div>
     </section>
   </main>
 
@@ -228,7 +264,7 @@ onBeforeUnmount(() => {
     </transition>
   </teleport>
 
-  <footer><RouterLink to="/">Zantix</RouterLink><span>Feedback from projects, products, and collaborations.</span><span>© 2026 Zantix</span></footer>
+  <footer><RouterLink to="/">Christopher Böhme</RouterLink><span>A personal portfolio for web development, Luau scripting, and UI/UX work.</span><span>© 2026 Christopher Böhme</span></footer>
 
   <teleport to="body">
     <transition name="fade">
@@ -257,7 +293,7 @@ onBeforeUnmount(() => {
                           <svg v-else-if="page.slug === 'open-source'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18"/><path d="m6 7 1-3h10l1 3"/><rect x="5" y="7" width="14" height="12" rx="2"/><path d="M9 11h6M9 15h6"/></svg>
                           <svg v-else-if="page.slug === 'developers'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m4 21 4-4M4 17l4 4"/><path d="M15.5 3.5a2.12 2.12 0 0 1 3 3L11 14l-4 1 1-4 7.5-7.5Z"/></svg>
                           <svg v-else-if="page.slug === 'links'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 1 0-7l1.5-1.5a5 5 0 0 1 7 7L17 13"/><path d="M14 11a5 5 0 0 1 0 7l-1.5 1.5a5 5 0 1 1-7-7L7 11"/></svg>
-                          <svg v-else-if="page.slug === 'testimonials'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 15a3 3 0 0 1-3 3H9l-5 3v-6a3 3 0 0 1-1-2.25V7a3 3 0 0 1 3-3h11a3 3 0 0 1 3 3Z"/><path d="M8 9h.01M12 9h.01M16 9h.01"/></svg>
+                          <svg v-else-if="page.slug === 'reviews'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 15a3 3 0 0 1-3 3H9l-5 3v-6a3 3 0 0 1-1-2.25V7a3 3 0 0 1 3-3h11a3 3 0 0 1 3 3Z"/><path d="M8 9h.01M12 9h.01M16 9h.01"/></svg>
                           <svg v-else-if="page.slug.startsWith('social-')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 1 0-7l1.5-1.5a5 5 0 0 1 7 7L17 13"/><path d="M14 11a5 5 0 0 1 0 7l-1.5 1.5a5 5 0 1 1-7-7L7 11"/></svg>
                           <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z"/><path d="M14 2v5h5M9 13h6M9 17h6"/></svg>
                         </span>
@@ -304,36 +340,38 @@ onBeforeUnmount(() => {
 .topbar-logo { width: 42px; height: 42px; object-fit: contain; }
 .top-search { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: .5rem; height: 42px; padding: .35rem .6rem; border: 1px solid rgba(255,255,255,.12); border-radius: 12px; }
 .top-search svg { width: 18px; }.top-search input { width: 100%; border: 0; outline: 0; color: #fff; background: transparent; font: .94rem "Space Grotesk",sans-serif; }.kbd-hint { display: inline-flex; gap: .2rem; }.kbd { display: inline-flex; min-width: 20px; align-items: center; justify-content: center; padding: 2px 6px; border: 1px solid var(--kbd-border); border-radius: 6px; background: var(--kbd-bg); font-size: .74rem; }.modal-kbd { margin-left: auto; }
-#hamburger { display: grid; gap: 4px; width: 34px; padding: 7px 6px; border: 0; background: transparent; }#hamburger span { width: 100%; height: 2px; border-radius: 9px; background: #fff; }
+#hamburger { display: grid; grid-template-rows: repeat(3,1fr); align-items: center; gap: 4px; width: 34px; aspect-ratio: 1; padding: 7px 6px; border: 0; border-radius: 10px; background: transparent; }
+#hamburger span { width: 100%; height: 2px; border-radius: 999px; background: #fff; }
 #topbarMenu { position: absolute; top: 110%; right: 12px; display: grid; gap: .25rem; min-width: 190px; padding: .6rem; border: 1px solid rgba(255,255,255,.12); border-radius: 12px; background: rgba(8,10,16,.94); opacity: 0; transform: translateY(-8px); pointer-events: none; transition: 200ms ease; }#topbarMenu[data-open="true"] { opacity: 1; transform: none; pointer-events: auto; }#topbarMenu a { padding: .48rem .55rem; border-radius: 8px; color: #fff; }#topbarMenu a:hover { background: rgba(255,255,255,.07); }
-.testimonials-page { position: relative; min-height: 100vh; padding: clamp(10rem,16vw,13rem) clamp(1.3rem,7vw,6rem) clamp(7rem,11vw,10rem); overflow: hidden; color: #fff; background: #000; font-family: "Space Grotesk",sans-serif; }
-.testimonials-page::before { position: absolute; top: 3rem; left: 50%; z-index: 0; width: 125%; height: clamp(32rem,52vw,42rem); background-image: linear-gradient(rgba(255,255,255,.075) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.075) 1px,transparent 1px); background-size: 72px 54px; mask-image: linear-gradient(to bottom,#000 0,rgba(0,0,0,.7) 45%,transparent 88%),linear-gradient(to right,transparent,#000 16%,#000 84%,transparent); mask-composite: intersect; transform: translateX(-50%) perspective(650px) rotateX(58deg) scale(1.14); transform-origin: center top; pointer-events: none; content: ""; }
-.testimonials-page::after { position: absolute; inset: 0; z-index: 0; background: linear-gradient(90deg,rgba(0,0,0,.62),transparent 18%,transparent 82%,rgba(0,0,0,.62)); pointer-events: none; content: ""; }
-.reviews-hero,.reviews-content { position: relative; z-index: 2; max-width: 1160px; margin-inline: auto; }
+.reviews-page { position: relative; min-height: 100vh; padding: clamp(10rem,16vw,13rem) clamp(1.3rem,7vw,6rem) clamp(7rem,11vw,10rem); overflow: hidden; color: #fff; background: #000; font-family: "Space Grotesk",sans-serif; }
+.reviews-page::before { position: absolute; top: 3rem; left: 50%; z-index: 0; width: 125%; height: clamp(32rem,52vw,42rem); background-image: linear-gradient(rgba(255,255,255,.075) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.075) 1px,transparent 1px); background-size: 72px 54px; mask-image: linear-gradient(to bottom,#000 0,rgba(0,0,0,.7) 45%,transparent 88%),linear-gradient(to right,transparent,#000 16%,#000 84%,transparent); mask-composite: intersect; transform: translateX(-50%) perspective(650px) rotateX(58deg) scale(1.14); transform-origin: center top; pointer-events: none; content: ""; }
+.reviews-page::after { position: absolute; inset: 0; z-index: 0; background: linear-gradient(90deg,rgba(0,0,0,.62),transparent 18%,transparent 82%,rgba(0,0,0,.62)); pointer-events: none; content: ""; }
+.reviews-hero,.reviews-section,.reviews-content { position: relative; z-index: 2; max-width: 1160px; margin-inline: auto; }
 .reviews-hero { display: grid; min-height: clamp(27rem,50vh,36rem); align-content: center; justify-items: center; text-align: center; }
 .reviews-title { position: relative; display: grid; width: 100%; min-height: clamp(14rem,25vw,20rem); place-items: center; transform: translateY(clamp(-3rem,-3vw,-1.8rem)); }
 .reviews-title__backdrop { color: transparent; font: 800 clamp(5.5rem,15vw,11.5rem)/.8 Orbitron,sans-serif; letter-spacing: -.055em; text-transform: uppercase; white-space: nowrap; background: linear-gradient(90deg,#fff 0%,#527df0 48%,#fff 100%); background-clip: text; -webkit-background-clip: text; filter: drop-shadow(0 0 28px rgba(18,72,210,.28)); }
 .reviews-hero h1 { position: absolute; top: 58%; left: 50%; margin: 0; color: #fff; font: 400 clamp(4.5rem,11vw,8.5rem)/.75 Allura,cursive; text-shadow: 0 12px 34px rgba(0,0,0,.8),0 0 26px rgba(18,72,210,.3); transform: translate(-50%,-50%) rotate(-4deg); }
 .reviews-content { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1rem; }
-.review-card { position: relative; display: flex; min-height: 280px; flex-direction: column; gap: 1.2rem; margin: 0; padding: clamp(1.4rem,3vw,2rem); overflow: hidden; border: 1px solid rgba(255,255,255,.12); border-radius: 12px; background: #030405; box-shadow: 0 18px 48px rgba(0,0,0,.32),inset 0 1px rgba(255,255,255,.025); transition: background-color 220ms ease,border-color 220ms ease,transform 220ms cubic-bezier(.22,.8,.36,1); }
+.review-card { position: relative; display: flex; min-height: 220px; max-height: 360px; flex-direction: column; gap: 1rem; margin: 0; padding: clamp(1.15rem,2.5vw,1.65rem); overflow: hidden; border: 1px solid rgba(255,255,255,.12); border-radius: 12px; background: #030405; box-shadow: 0 18px 48px rgba(0,0,0,.32),inset 0 1px rgba(255,255,255,.025); transition: background-color 220ms ease,border-color 220ms ease,transform 220ms cubic-bezier(.22,.8,.36,1),box-shadow 220ms ease; }
 .review-card::after { position: absolute; right: -45px; bottom: -65px; width: 170px; height: 170px; border: 1px solid rgba(90,136,255,.13); border-radius: 50%; box-shadow: 0 0 0 28px rgba(90,136,255,.025),0 0 0 58px rgba(90,136,255,.018); content: ""; pointer-events: none; }
-.review-card--featured { grid-column: 1 / -1; min-height: 330px; }
+.review-card--featured { grid-column: 1 / -1; min-height: 260px; }
 .review-card:hover { border-color: rgba(115,153,255,.38); background: #06080d; transform: translateY(-4px); }
+.review-card--target { border-color: rgba(155,180,255,.75); box-shadow: 0 0 0 1px rgba(155,180,255,.45),0 24px 70px rgba(38,87,214,.28),inset 0 1px rgba(255,255,255,.04); }
 .review-card__top { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; }
 .review-index { display: grid; min-width: 4.5rem; min-height: 42px; place-items: center; justify-self: end; align-self: end; color: #fff; font: 700 1rem Orbitron,sans-serif; letter-spacing: .08em; text-align: center; transform: translate(.65rem,.65rem); }
 .stars { justify-self: end; color: #f4c84a; font-size: .72rem; letter-spacing: .1em; white-space: nowrap; }
-.review-card blockquote { position: relative; z-index: 1; display: -webkit-box; max-width: 48ch; margin: auto 0; overflow: hidden; color: rgba(255,255,255,.88); font-size: clamp(1.2rem,2.25vw,1.75rem); line-height: 1.45; letter-spacing: -.025em; text-wrap: balance; -webkit-box-orient: vertical; -webkit-line-clamp: 5; }
-.review-card--featured blockquote { max-width: 920px; font-size: clamp(1.7rem,3.5vw,3rem); line-height: 1.25; }
+.review-card blockquote { position: relative; z-index: 1; display: -webkit-box; max-width: 58ch; margin: auto 0; overflow: hidden; color: rgba(255,255,255,.88); font-size: clamp(1rem,1.55vw,1.3rem); line-height: 1.42; letter-spacing: -.015em; -webkit-box-orient: vertical; -webkit-line-clamp: 5; }
+.review-card--featured blockquote { max-width: 920px; font-size: clamp(1.25rem,2.35vw,2rem); line-height: 1.32; }
 .review-read-more { position: relative; z-index: 2; display: inline-flex; width: fit-content; align-items: center; gap: .45rem; padding: .38rem 0; border: 0; color: #9bb4ff; background: transparent; font: 600 .72rem Orbitron,sans-serif; letter-spacing: .08em; text-transform: uppercase; transition: color 180ms ease,gap 180ms ease; }
 .review-read-more:hover { gap: .7rem; color: #fff; }
 .review-card figcaption { position: relative; z-index: 1; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: .75rem; margin-top: auto; }
-.avatar { display: grid; width: 42px; height: 42px; place-items: center; overflow: hidden; border: 1px solid rgba(255,255,255,.14); border-radius: 50%; color: #dce5ff; background: #12141a; font-weight: 700; }
+.avatar { display: grid; width: 38px; height: 38px; place-items: center; overflow: hidden; border: 1px solid rgba(255,255,255,.14); border-radius: 50%; color: #dce5ff; background: #12141a; font-weight: 700; }
 .avatar > * { grid-area: 1 / 1; }
 .avatar-fallback { color: #fff; }
 .avatar img { position: relative; z-index: 1; width: 100%; height: 100%; object-fit: cover; }
 .review-person { display: grid; gap: .12rem; }
-.review-person strong { font-size: .9rem; }
-.review-person small { color: rgba(255,255,255,.45); }
+.review-person strong { font-size: .86rem; }
+.review-person small { color: rgba(255,255,255,.45); font-size: .78rem; }
 .review-modal-backdrop { position: fixed; inset: 0; z-index: 999999; display: grid; place-items: center; padding: 1.25rem; background: rgba(0,0,0,.72); backdrop-filter: blur(14px); }
 .review-modal { position: relative; display: grid; gap: 1.5rem; width: min(720px,94vw); max-height: min(82vh,760px); padding: clamp(1.6rem,5vw,3.4rem); overflow: auto; border: 1px solid rgba(255,255,255,.14); border-radius: 16px; color: #fff; background: #050507; box-shadow: 0 34px 100px rgba(0,0,0,.7); }
 .review-modal__close { position: absolute; top: 1rem; right: 1rem; display: grid; width: 38px; height: 38px; place-items: center; border: 1px solid rgba(255,255,255,.12); border-radius: 50%; color: #fff; background: rgba(255,255,255,.04); font-size: 1.4rem; line-height: 1; }
@@ -370,5 +408,5 @@ footer { display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 1rem; padding: 
 .langitem-enter-active,.langitem-leave-active { transition: opacity 320ms cubic-bezier(.22,.8,.36,1) calc(var(--d,0s) + .12s),transform 320ms cubic-bezier(.22,.8,.36,1) calc(var(--d,0s) + .12s); }
 .langitem-enter-from,.langitem-leave-to { opacity: 0; transform: translateX(10px) scale(.98); }
 @media (max-width:800px) { .reviews-content { grid-template-columns: 1fr; }.review-card--featured { grid-column: auto; }.review-card,.review-card--featured { min-height: 270px; }.review-card--featured blockquote { font-size: clamp(1.4rem,5vw,2rem); } }
-@media (max-width:700px) { .testimonials-page { padding: 9.5rem 1.35rem 7rem; }.testimonials-page::before { top: 5rem; width: 165%; height: 31rem; background-size: 52px 42px; }.reviews-hero { min-height: 27rem; }.reviews-title { min-height: 11rem; transform: translateY(-1.5rem); }.reviews-title__backdrop { font-size: clamp(3.8rem,19vw,5.5rem); }.reviews-hero h1 { font-size: clamp(4.2rem,24vw,6.2rem); }.review-card figcaption { grid-template-columns: auto minmax(0,1fr) auto; }footer { grid-template-columns: 1fr; text-align: center; }footer span:last-child { text-align: center; } }
+@media (max-width:700px) { .reviews-page { padding: 9.5rem 1.35rem 7rem; }.reviews-page::before { top: 5rem; width: 165%; height: 31rem; background-size: 52px 42px; }.reviews-hero { min-height: 27rem; }.reviews-title { min-height: 11rem; transform: translateY(-1.5rem); }.reviews-title__backdrop { font-size: clamp(3.8rem,19vw,5.5rem); }.reviews-hero h1 { font-size: clamp(4.2rem,24vw,6.2rem); }.review-card figcaption { grid-template-columns: auto minmax(0,1fr) auto; }footer { grid-template-columns: 1fr; text-align: center; }footer span:last-child { text-align: center; } }
 </style>

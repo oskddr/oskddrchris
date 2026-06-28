@@ -3,12 +3,12 @@ import { computed } from 'vue';
 import { navigationLoader } from '@/lib/navigationLoader';
 
 const steps = computed(() => {
-  if (navigationLoader.target === 'Testimonials') {
+  if (navigationLoader.target === 'Reviews') {
     return [
-      { text: 'Finding client reviews', afterText: 'Reviews found' },
-      { text: 'Loading testimonials', afterText: 'Testimonials loaded' },
-      { text: 'Preparing client stories', afterText: 'Stories ready' },
-      { text: 'Opening Testimonials', afterText: 'Ready' },
+      { text: 'Finding reviews', afterText: 'Reviews found' },
+      { text: 'Loading reviews', afterText: 'Reviews loaded' },
+      { text: 'Preparing feedback', afterText: 'Feedback ready' },
+      { text: 'Opening Reviews', afterText: 'Ready' },
     ];
   }
 
@@ -95,7 +95,7 @@ const steps = computed(() => {
 
 <style scoped>
 .multi-step-loader { position: fixed; inset: 0; z-index: 10000; display: flex; width: 100%; height: 100%; align-items: center; justify-content: center; color: #fff; background: rgba(0,0,0,1); backdrop-filter: blur(28px); font-family: Inter,system-ui,sans-serif; transition: background-color 300ms cubic-bezier(.22,.8,.36,1); }
-.multi-step-loader.is-revealing { background: rgba(0,0,0,.08); }
+.multi-step-loader.is-revealing { background: rgba(0,0,0,.78); }
 .multi-step-loader__viewport { position: relative; height: 24rem; }
 .multi-step-loader__list { position: relative; display: flex; max-width: 36rem; flex-direction: column; justify-content: flex-start; margin: 10rem auto 0; }
 .multi-step-loader__step { display: flex; align-items: center; gap: .5rem; margin-bottom: 1rem; text-align: left; transition: opacity 300ms ease, transform 300ms ease; }

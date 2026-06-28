@@ -3,13 +3,15 @@ import { createRouter, createWebHistory } from 'vue-router';
 import { finishNavigation, setNavigationStep, startNavigation } from '../lib/navigationLoader';
 
 const HomePage = () => import('../pages/HomePage.vue');
+const AboutPage = () => import('../pages/AboutPage.vue');
 const DevelopersPage = () => import('../pages/DevelopersPage.vue');
 const DeveloperProfilePage = () => import('../pages/DeveloperProfilePage.vue');
 const NotFoundPage = () => import('../pages/NotFoundPage.vue');
 const AssetPage = () => import('../pages/AssetPage.vue');
 const OpenSourcePage = () => import('../pages/OpenSourcePage.vue');
 const LinksPage = () => import('../pages/LinksPage.vue');
-const TestimonialsPage = () => import('../pages/TestimonialsPage.vue');
+const ReviewsPage = () => import('../pages/TestimonialsPage.vue');
+const CreditsPage = () => import('../pages/CreditsPage.vue');
 
 const HISTORY_KEY = 'zantixHistory';
 
@@ -36,10 +38,16 @@ const router = createRouter({
       meta: { label: 'Home' },
     },
     {
+      path: '/about',
+      name: 'about',
+      component: AboutPage,
+      meta: { label: 'About me' },
+    },
+    {
       path: '/Team',
       name: 'developers',
       component: DevelopersPage,
-      meta: { label: 'Developers' },
+      meta: { label: 'Works' },
     },
     {
       path: '/opensource',
@@ -54,10 +62,28 @@ const router = createRouter({
       meta: { label: 'Links' },
     },
     {
+      path: '/reviews/',
+      name: 'reviews',
+      component: ReviewsPage,
+      meta: { label: 'Reviews' },
+    },
+    {
+      path: '/credits/',
+      name: 'credits',
+      component: CreditsPage,
+      meta: { label: 'Credits' },
+    },
+    {
+      path: '/credits',
+      redirect: '/credits/',
+    },
+    {
+      path: '/reviews',
+      redirect: '/reviews/',
+    },
+    {
       path: '/testimonials',
-      name: 'testimonials',
-      component: TestimonialsPage,
-      meta: { label: 'Testimonials' },
+      redirect: '/reviews/',
     },
     {
       path: '/Team/:group/:slug',
@@ -94,6 +120,10 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
+  document.documentElement.style.overflow = '';
+  document.documentElement.style.overflowY = '';
+  document.body.style.overflow = '';
+  document.body.style.overflowY = '';
   startNavigation(to.meta?.label || (typeof to.name === 'string' ? to.name : 'Page'));
   if (from && from.path) {
     const label =

@@ -30,7 +30,7 @@
   <div class="A2B">
     <section class="a2b-hero" :aria-label="t('teamSectionLabel')" data-reveal="fade-up">
       <h1>
-        <span class="orbitron-title">Zantix</span>
+        <span class="orbitron-title">Christopher Böhme</span>
         <span class="allura-title">{{ t('teamLabel') }}</span>
       </h1>
       <p class="a2b-description" data-reveal="fade" data-reveal-delay="0.08">{{ t('developersSubtitle') }}</p>
@@ -96,7 +96,7 @@
   <div class="A2B">
     <section class="a2b-hero" :aria-label="t('curatorsSectionLabel')" data-reveal="fade-up">
       <h1>
-        <span class="orbitron-title">Zantix</span>
+        <span class="orbitron-title">Christopher Böhme</span>
         <span class="allura-title">{{ t('curatorsTitle') }}</span>
       </h1>
       <p class="a2b-description" data-reveal="fade" data-reveal-delay="0.08">
@@ -351,18 +351,18 @@
         />
         <span class="kbd-hint"><span class="kbd">/</span></span>
       </label>
-      <button id="hamburger" :aria-label="t('menuLabel')" @click="menuOpen = !menuOpen">
+      <button id="hamburger" :aria-label="t('menuLabel')" :aria-expanded="menuOpen" :class="{ 'is-open': menuOpen }" @click.stop="toggleMenu">
         <span id="bar1"></span>
         <span id="bar2"></span>
         <span id="bar3"></span>
       </button>
-      <div id="topbarMenu" :data-open="menuOpen">
-        <RouterLink to="/" role="menuitem" data-cursor-hover @click="menuOpen = false">{{ t('topAbout') }}</RouterLink>
-        <RouterLink to="/opensource" role="menuitem" data-cursor-hover @click="menuOpen = false">{{ t('topAssets') }}</RouterLink>
-        <RouterLink to="/Team" role="menuitem" data-cursor-hover @click="menuOpen = false">{{ t('topDevelopers') }}</RouterLink>
-        <RouterLink to="/links" role="menuitem" data-cursor-hover @click="menuOpen = false">{{ t('pageLinks') }}</RouterLink>
-        <RouterLink to="/testimonials" role="menuitem" data-cursor-hover @click="menuOpen = false">Testimonials</RouterLink>
-        <a href="#tos" role="menuitem" data-cursor-hover>{{ t('topTOS') }}</a>
+      <div id="topbarMenu" :data-open="menuOpen" @pointermove="keepMenuOpen" @focusin="keepMenuOpen" @keydown="keepMenuOpen">
+        <RouterLink to="/about" role="menuitem" data-cursor-hover @click="closeMenu">{{ t('topAbout') }}</RouterLink>
+        <RouterLink to="/Team" role="menuitem" data-cursor-hover @click="closeMenu">Works</RouterLink>
+        <RouterLink to="/opensource" role="menuitem" data-cursor-hover @click="closeMenu">{{ t('topAssets') }}</RouterLink>
+        <RouterLink to="/reviews/" role="menuitem" data-cursor-hover @click="closeMenu">Reviews</RouterLink>
+        <RouterLink to="/links" role="menuitem" data-cursor-hover @click="closeMenu">{{ t('pageLinks') }}</RouterLink>
+        <RouterLink to="/credits/" role="menuitem" data-cursor-hover @click="closeMenu">Credits</RouterLink>
       </div>
     </div>
 
@@ -451,7 +451,7 @@
                               <path d="M10 13a5 5 0 0 1 0-7l1.5-1.5a5 5 0 0 1 7 7L17 13" />
                               <path d="M14 11a5 5 0 0 1 0 7L12.5 19.5a5 5 0 1 1-7-7L7 11" />
                             </svg>
-                            <svg v-else-if="page.slug === 'testimonials'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 15a3 3 0 0 1-3 3H9l-5 3v-6a3 3 0 0 1-1-2.25V7a3 3 0 0 1 3-3h11a3 3 0 0 1 3 3Z"/><path d="M8 9h.01M12 9h.01M16 9h.01"/></svg>
+                            <svg v-else-if="page.slug === 'reviews'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 15a3 3 0 0 1-3 3H9l-5 3v-6a3 3 0 0 1-1-2.25V7a3 3 0 0 1 3-3h11a3 3 0 0 1 3 3Z"/><path d="M8 9h.01M12 9h.01M16 9h.01"/></svg>
                             <svg v-else-if="page.slug.startsWith('social-')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 1 0-7l1.5-1.5a5 5 0 0 1 7 7L17 13"/><path d="M14 11a5 5 0 0 1 0 7l-1.5 1.5a5 5 0 1 1-7-7L7 11"/></svg>
                             <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                               <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z" />
@@ -2181,6 +2181,7 @@ import { computed, h, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'v
 import { useRoute, useRouter } from 'vue-router';
 import SmoothCursor from '../components/SmoothCursor.vue';
 import { matchesSearch } from '@/lib/searchMatch';
+import { useAutoCloseMenu } from '@/lib/useAutoCloseMenu';
 import PatternBackground from '../components/ui/pattern-background/PatternBackground.vue';
 import {
   PATTERN_BACKGROUND_DIRECTION,
@@ -2226,10 +2227,12 @@ const readStoredTheme = (): 'system' | 'light' | 'dark' | null => {
 
 const pages = [
   { slug: "home", label: "Home", href: "/" },
+  { slug: "about", label: "About me", href: "/about" },
   { slug: "assets", label: "Open Source", href: "/opensource" },
-  { slug: "developers", label: "Developers", href: "/Team" },
+  { slug: "developers", label: "Works", href: "/Team" },
   { slug: "links", label: "Links", href: "/links" },
-  { slug: "testimonials", label: "Testimonials", href: "/testimonials" },
+  { slug: "reviews", label: "Reviews", href: "/reviews/" },
+  { slug: "credits", label: "Credits", href: "/credits/" },
 ];
 
 const themeOptions = [
@@ -2240,37 +2243,37 @@ const themeOptions = [
 
 const translations: Record<string, Record<string, string>> = {
   en: {
-    topAbout: 'About Zantix',
+    topAbout: 'About me',
     topAssets: 'Open Source',
-    topDevelopers: 'Zantix Team',
-    topTOS: 'Zantix TOS',
+    topDevelopers: 'Works',
+    topTOS: 'TOS',
     searchPlaceholder: "Search",
     searchMain: "Search",
     searchLabel: 'Search',
     menuLabel: 'Menu',
-    heroTitle: 'Zantix',
+    heroTitle: 'Christopher Böhme',
     heroSubtitle: 'Power your studio with pro assets',
     heroTitleLead: 'Meet the',
     heroTitleName: 'Team',
     teamLabel: 'Team',
     heroAriaLabel: 'Meet the team',
-    teamSectionLabel: 'Zantix team',
-    curatorsSectionLabel: 'Zantix curators',
-    heroDescription: 'Scripts, UI, animation, models, and curation—the Zantix team made it all.',
+    teamSectionLabel: 'Team',
+    curatorsSectionLabel: 'Curators',
+    heroDescription: 'Scripts, UI, animation, models, and curation by Christopher Böhme.',
     heroBtnAssets: 'Assets',
-    heroBtnDevelopers: 'Team',
+    heroBtnDevelopers: 'Works',
     shipWith: 'Publish with',
     feature1Title: 'Drop-in Ready',
     feature1Desc: 'Designed to work out of the box with minimal setup or adjustment',
     feature2Title: 'Ongoing Releases',
     feature2Desc: 'New assets and templates are added regularly as the library grows over time',
     feature3Title: 'Real-Time Support',
-    feature3Desc: '24/7 Support in the Zantix Discord Server for your questions or setup',
+    feature3Desc: 'Support for your questions or setup',
     themeLabel: 'Theme',
     pagesLabel: 'Pages',
     pageHome: 'Home',
     pageAssets: "Open Source",
-    pageDevelopers: 'Team',
+    pageDevelopers: 'Works',
     pageLinks: 'Links',
     pageTOS: 'TOS',
     confidence: 'confidence',
@@ -2279,8 +2282,8 @@ const translations: Record<string, Record<string, string>> = {
     stability: 'stability',
     historyTitle: 'Recent pages',
     historySearchTitle: 'History matches',
-    developersTitle: 'Zantix Team',
-    footerCopyright: '© 2026 Zantix',
+    developersTitle: 'Team',
+    footerCopyright: '© 2026 Christopher Böhme',
     developersSubtitle: 'Scripts, UI, animation, models, curation—this crew builds it all.',
     curatorsTitle: 'Curators',
     curatorsSubtitle: 'Quality, style, and consistency—this team curates the library.',
@@ -2619,6 +2622,7 @@ const router = useRouter();
 
 const topbarVisible = ref(false);
 const menuOpen = ref(false);
+const { closeMenu, keepMenuOpen, toggleMenu } = useAutoCloseMenu(menuOpen);
 const searchModalOpen = ref(false);
 const searchQuery = ref('');
 const historyList = ref<HistoryEntry[]>([]);
@@ -2689,7 +2693,7 @@ const applyScrollAnimations = () => {
         }
       });
     },
-    { threshold: 0.18, rootMargin: '0px 0px -12% 0px' },
+    { threshold: 0.01, rootMargin: '0px 0px 0px 0px' },
   );
   revealObserver.value = observer;
   elements.forEach((el) => observer.observe(el));

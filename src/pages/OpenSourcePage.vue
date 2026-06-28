@@ -1,6 +1,8 @@
 <template>
   <div id="topbarMain" :data-ready="topbarVisible">
-    <img class="topbar-logo" src="@/assets/img/logo/Logo.png" alt="Zantix">
+    <RouterLink class="topbar-logo-link" to="/" aria-label="Home" data-cursor-hover>
+      <img class="topbar-logo" src="@/assets/img/logo/Logo.png" alt="Christopher Böhme">
+    </RouterLink>
     <label class="top-search" aria-label="Search" @click.stop="openSearchModal">
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="2" fill="none" />
@@ -28,13 +30,13 @@
       <span id="bar2"></span>
       <span id="bar3"></span>
     </button>
-    <div id="topbarMenu" :data-open="menuOpen">
-      <RouterLink to="/" role="menuitem" @click="menuOpen = false">About Zantix</RouterLink>
-      <RouterLink to="/opensource" role="menuitem" @click="menuOpen = false">Open Source</RouterLink>
-      <RouterLink to="/Team" role="menuitem" @click="menuOpen = false">Zantix Team</RouterLink>
-      <RouterLink to="/links" role="menuitem" @click="menuOpen = false">Links</RouterLink>
-      <RouterLink to="/testimonials" role="menuitem" @click="menuOpen = false">Testimonials</RouterLink>
-      <a href="#" role="menuitem" @click="menuOpen = false">Zantix TOS</a>
+    <div id="topbarMenu" :data-open="menuOpen" @pointermove="keepMenuOpen" @focusin="keepMenuOpen" @keydown="keepMenuOpen">
+      <RouterLink to="/about" role="menuitem" @click="closeMenu">About me</RouterLink>
+      <RouterLink to="/Team" role="menuitem" @click="closeMenu">Works</RouterLink>
+      <RouterLink to="/opensource" role="menuitem" @click="closeMenu">Open Source</RouterLink>
+      <RouterLink to="/reviews/" role="menuitem" @click="closeMenu">Reviews</RouterLink>
+      <RouterLink to="/links" role="menuitem" @click="closeMenu">Links</RouterLink>
+      <RouterLink to="/credits/" role="menuitem" @click="closeMenu">Credits</RouterLink>
     </div>
   </div>
 
@@ -331,7 +333,7 @@
                             <path d="M10 13a5 5 0 0 1 0-7l1.5-1.5a5 5 0 0 1 7 7L17 13" />
                             <path d="M14 11a5 5 0 0 1 0 7L12.5 19.5a5 5 0 1 1-7-7L7 11" />
                           </svg>
-                          <svg v-else-if="page.slug === 'testimonials'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 15a3 3 0 0 1-3 3H9l-5 3v-6a3 3 0 0 1-1-2.25V7a3 3 0 0 1 3-3h11a3 3 0 0 1 3 3Z"/><path d="M8 9h.01M12 9h.01M16 9h.01"/></svg>
+                          <svg v-else-if="page.slug === 'reviews'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 15a3 3 0 0 1-3 3H9l-5 3v-6a3 3 0 0 1-1-2.25V7a3 3 0 0 1 3-3h11a3 3 0 0 1 3 3Z"/><path d="M8 9h.01M12 9h.01M16 9h.01"/></svg>
                           <svg v-else-if="page.slug.startsWith('social-')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 1 0-7l1.5-1.5a5 5 0 0 1 7 7L17 13"/><path d="M14 11a5 5 0 0 1 0 7l-1.5 1.5a5 5 0 1 1-7-7L7 11"/></svg>
                           <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z" />
@@ -416,6 +418,7 @@ import { RouterLink, useRouter } from "vue-router";
 import SmoothCursor from "../components/SmoothCursor.vue";
 import { matchesSearch } from "@/lib/searchMatch";
 import logoImage from "@/assets/img/logo/Logo.png";
+import { useAutoCloseMenu } from "@/lib/useAutoCloseMenu";
 
 const router = useRouter();
 const STORAGE_THEME_KEY = "zantixTheme";
@@ -429,6 +432,7 @@ const readStoredTheme = (): "system" | "light" | "dark" | null => {
 
 const topbarVisible = ref(false);
 const menuOpen = ref(false);
+const { closeMenu, keepMenuOpen, toggleMenu } = useAutoCloseMenu(menuOpen);
 const searchInput = ref<HTMLInputElement | null>(null);
 const modalSearchInput = ref<HTMLInputElement | null>(null);
 const searchModalOpen = ref(false);
@@ -449,10 +453,12 @@ const setupTreeOpen = ref<Record<string, boolean>>({});
 
 const pages = [
   { slug: "home", label: "Home", href: "/" },
+  { slug: "about", label: "About me", href: "/about" },
   { slug: "open-source", label: "Open Source", href: "/opensource" },
-  { slug: "developers", label: "Developers", href: "/Team" },
+  { slug: "developers", label: "Works", href: "/Team" },
   { slug: "links", label: "Links", href: "/links" },
-  { slug: "testimonials", label: "Testimonials", href: "/testimonials" },
+  { slug: "reviews", label: "Reviews", href: "/reviews/" },
+  { slug: "credits", label: "Credits", href: "/credits/" },
 ];
 
 const crossoverSpots = ["top-left", "top-right", "bottom-left", "bottom-right"];
@@ -2142,10 +2148,6 @@ const pagesShouldOpen = computed(
 const projectsShouldOpen = computed(
   () => projectsOpen.value || (searchQuery.value.trim() && filteredOpenSourceProjects.value.length > 0),
 );
-
-const toggleMenu = () => {
-  menuOpen.value = !menuOpen.value;
-};
 
 const handleKeydown = (e: KeyboardEvent) => {
   if (e.key === "/" && !e.metaKey && !e.ctrlKey && !e.altKey) {

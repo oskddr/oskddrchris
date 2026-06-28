@@ -22,24 +22,24 @@
       id="hamburger"
       ref="hamburgerRef"
       :aria-label="t('menuLabel')"
-      @click.stop="menuOpen = !menuOpen"
+      :aria-expanded="menuOpen"
+      :class="{ 'is-open': menuOpen }"
+      @click.stop="toggleMenu"
     >
       <span id="bar1"></span>
       <span id="bar2"></span>
       <span id="bar3"></span>
     </button>
 
-    <div id="topbarMenu" ref="topbarMenuRef" :data-open="menuOpen">
-      <RouterLink to="/" role="menuitem" data-cursor-hover @click="closeMenu">{{ t("topAbout") }}</RouterLink>
+    <div id="topbarMenu" ref="topbarMenuRef" :data-open="menuOpen" @pointermove="keepMenuOpen" @focusin="keepMenuOpen" @keydown="keepMenuOpen">
+      <RouterLink to="/about" role="menuitem" data-cursor-hover @click="closeMenu">{{ t("topAbout") }}</RouterLink>
+      <RouterLink to="/Team" role="menuitem" data-cursor-hover @click="closeMenu">Works</RouterLink>
       <RouterLink to="/opensource" role="menuitem" data-cursor-hover @click="closeMenu">
         {{ t("topAssets") }}
       </RouterLink>
-      <RouterLink to="/Team" role="menuitem" data-cursor-hover @click="closeMenu">{{ t("topDevelopers") }}</RouterLink>
+      <RouterLink to="/reviews/" role="menuitem" data-cursor-hover @click="closeMenu">Reviews</RouterLink>
       <RouterLink to="/links" role="menuitem" data-cursor-hover @click="closeMenu">{{ t("pageLinks") }}</RouterLink>
-      <RouterLink to="/testimonials" role="menuitem" data-cursor-hover @click="closeMenu">Testimonials</RouterLink>
-      <RouterLink :to="{ path: '/', hash: '#tos' }" role="menuitem" data-cursor-hover @click="closeMenu">
-        {{ t("topTOS") }}
-      </RouterLink>
+      <RouterLink to="/credits/" role="menuitem" data-cursor-hover @click="closeMenu">Credits</RouterLink>
     </div>
   </div>
 
@@ -131,7 +131,7 @@
                             <path d="M10 13a5 5 0 0 1 0-7l1.5-1.5a5 5 0 0 1 7 7L17 13" />
                             <path d="M14 11a5 5 0 0 1 0 7L12.5 19.5a5 5 0 1 1-7-7L7 11" />
                         </svg>
-                        <svg v-else-if="page.slug === 'testimonials'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 15a3 3 0 0 1-3 3H9l-5 3v-6a3 3 0 0 1-1-2.25V7a3 3 0 0 1 3-3h11a3 3 0 0 1 3 3Z"/><path d="M8 9h.01M12 9h.01M16 9h.01"/></svg>
+                        <svg v-else-if="page.slug === 'reviews'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 15a3 3 0 0 1-3 3H9l-5 3v-6a3 3 0 0 1-1-2.25V7a3 3 0 0 1 3-3h11a3 3 0 0 1 3 3Z"/><path d="M8 9h.01M12 9h.01M16 9h.01"/></svg>
                         <svg v-else-if="page.slug.startsWith('social-')" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 1 0-7l1.5-1.5a5 5 0 0 1 7 7L17 13"/><path d="M14 11a5 5 0 0 1 0 7l-1.5 1.5a5 5 0 1 1-7-7L7 11"/></svg>
                         <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z" />
@@ -188,6 +188,7 @@ import { computed, h, nextTick, onBeforeUnmount, onMounted, ref, watch } from "v
 import { RouterLink, useRouter, useRoute } from "vue-router";
 import SmoothCursor from "@/components/SmoothCursor.vue";
 import { matchesSearch } from "@/lib/searchMatch";
+import { useAutoCloseMenu } from "@/lib/useAutoCloseMenu";
 
 const router = useRouter();
 const route = useRoute();
@@ -195,6 +196,7 @@ const routeSlug = computed(() => (route.params.assetSlug as string || "").toLowe
 
 const topbarVisible = ref(false);
 const menuOpen = ref(false);
+const { closeMenu, keepMenuOpen, toggleMenu } = useAutoCloseMenu(menuOpen);
 const topbarMenuRef = ref<HTMLElement | null>(null);
 const hamburgerRef = ref<HTMLButtonElement | null>(null);
 const searchInput = ref<HTMLInputElement | null>(null);
@@ -208,27 +210,29 @@ const isLoaded = ref(false);
 
 const pages = [
   { slug: "home", label: "Home", href: "/" },
+  { slug: "about", label: "About me", href: "/about" },
   { slug: "assets", label: "Open Source", href: "/opensource" },
-  { slug: "developers", label: "Developers", href: "/Team" },
+  { slug: "developers", label: "Works", href: "/Team" },
   { slug: "links", label: "Links", href: "/links" },
-  { slug: "testimonials", label: "Testimonials", href: "/testimonials" },
+  { slug: "reviews", label: "Reviews", href: "/reviews/" },
+  { slug: "credits", label: "Credits", href: "/credits/" },
 ];
 
 const translations: Record<string, Record<string, string>> = {
   en: {
-    heroTitle: "Zantix",
+    heroTitle: "Christopher Böhme",
     searchLabel: "Search",
     searchPlaceholder: "Search",
     searchMain: "Search",
     menuLabel: "Menu",
-    topAbout: "About Zantix",
+    topAbout: "About me",
     topAssets: "Open Source",
-    topDevelopers: "Zantix Team",
-    topTOS: "Zantix TOS",
+    topDevelopers: "Works",
+    topTOS: "TOS",
     pagesLabel: "Pages",
     pageHome: "Home",
     pageAssets: "Open Source",
-    pageDevelopers: "Developers",
+    pageDevelopers: "Works",
     pageLinks: "Links",
     pageTOS: "TOS",
   },
@@ -346,11 +350,6 @@ const closeSearchModal = () => {
   }
   searchQuery.value = "";
 };
-
-const closeMenu = () => {
-  menuOpen.value = false;
-};
-
 
 onMounted(() => {
   document.documentElement.setAttribute("lang", "en");
