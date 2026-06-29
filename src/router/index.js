@@ -47,7 +47,17 @@ const router = createRouter({
       path: '/Team',
       name: 'developers',
       component: DevelopersPage,
-      meta: { label: 'Works' },
+      meta: { label: 'Team' },
+    },
+    {
+      path: '/Team/',
+      redirect: '/Team',
+    },
+    {
+      path: '/Team/:group/:slug',
+      name: 'developer-profile',
+      component: DeveloperProfilePage,
+      meta: { label: 'Developer Profile' },
     },
     {
       path: '/opensource',
@@ -84,12 +94,6 @@ const router = createRouter({
     {
       path: '/testimonials',
       redirect: '/reviews/',
-    },
-    {
-      path: '/Team/:group/:slug',
-      name: 'developer-profile',
-      component: DeveloperProfilePage,
-      meta: { label: 'Profile' },
     },
     {
       path: '/Assets/:assetSlug',

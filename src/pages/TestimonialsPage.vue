@@ -23,7 +23,7 @@ const pages = [
   { slug: 'home', label: 'Home', href: '/' },
   { slug: 'about', label: 'About me', href: '/about' },
   { slug: 'open-source', label: 'Open Source', href: '/opensource' },
-  { slug: 'developers', label: 'Works', href: '/Team' },
+  { slug: 'developers', label: 'Team', href: '/Team' },
   { slug: 'links', label: 'Links', href: '/links' },
   { slug: 'reviews', label: 'Reviews', href: '/reviews/' },
   { slug: 'credits', label: 'Credits', href: '/credits/' },
@@ -175,7 +175,7 @@ onBeforeUnmount(() => {
     <button id="hamburger" type="button" aria-label="Menu" :aria-expanded="menuOpen" :class="{ 'is-open': menuOpen }" @click.stop="toggleMenu"><span id="bar1"></span><span id="bar2"></span><span id="bar3"></span></button>
     <div id="topbarMenu" :data-open="menuOpen" @pointermove="keepMenuOpen" @focusin="keepMenuOpen" @keydown="keepMenuOpen">
       <RouterLink to="/about" @click="closeMenu">About me</RouterLink>
-      <RouterLink to="/Team" @click="closeMenu">Works</RouterLink>
+      <RouterLink to="/Team" @click="closeMenu">Team</RouterLink>
       <RouterLink to="/opensource" @click="closeMenu">Open Source</RouterLink>
       <RouterLink to="/reviews/" @click="closeMenu">Reviews</RouterLink>
       <RouterLink to="/links" @click="closeMenu">Links</RouterLink>

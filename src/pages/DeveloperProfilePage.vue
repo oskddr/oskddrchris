@@ -33,7 +33,7 @@
 
     <div id="topbarMenu" ref="topbarMenuRef" :data-open="menuOpen" @pointermove="keepMenuOpen" @focusin="keepMenuOpen" @keydown="keepMenuOpen">
       <RouterLink to="/about" role="menuitem" data-cursor-hover @click="closeMenu">{{ t('topAbout') }}</RouterLink>
-      <RouterLink to="/Team" role="menuitem" data-cursor-hover @click="closeMenu">Works</RouterLink>
+      <RouterLink to="/Team" role="menuitem" data-cursor-hover @click="closeMenu">Team</RouterLink>
       <RouterLink to="/opensource" role="menuitem" data-cursor-hover @click="closeMenu">{{ t('topAssets') }}</RouterLink>
       <RouterLink to="/reviews/" role="menuitem" data-cursor-hover @click="closeMenu">Reviews</RouterLink>
       <RouterLink to="/links" role="menuitem" data-cursor-hover @click="closeMenu">{{ t('pageLinks') }}</RouterLink>
@@ -544,7 +544,7 @@ const pages = [
   { slug: "home", label: "Home", href: "/" },
   { slug: "about", label: "About me", href: "/about" },
   { slug: "assets", label: "Open Source", href: "/opensource" },
-  { slug: "developers", label: "Works", href: "/Team" },
+  { slug: "developers", label: "Team", href: "/Team" },
   { slug: "links", label: "Links", href: "/links" },
   { slug: "reviews", label: "Reviews", href: "/reviews/" },
   { slug: "credits", label: "Credits", href: "/credits/" },
@@ -568,7 +568,7 @@ const translations: Record<string, string> = {
   menuLabel: "Menu",
   topAbout: "About me",
   topAssets: "Open Source",
-  topDevelopers: "Works",
+  topDevelopers: "Team",
   topTOS: "TOS",
   infoTitle: "Info",
   rolesTitle: "Roles",
@@ -582,7 +582,7 @@ const translations: Record<string, string> = {
   pagesLabel: "Pages",
   pageHome: "Home",
   pageAssets: "Open Source",
-  pageDevelopers: "Works",
+  pageDevelopers: "Team",
   pageLinks: "Links",
   pageTOS: "TOS",
   moreDevsTitle: "More developers",

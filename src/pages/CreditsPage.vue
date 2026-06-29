@@ -15,7 +15,7 @@
     </button>
     <div id="topbarMenu" :data-open="menuOpen" @pointermove="keepMenuOpen" @focusin="keepMenuOpen" @keydown="keepMenuOpen">
       <RouterLink to="/about" role="menuitem" @click="closeMenu">About me</RouterLink>
-      <RouterLink to="/Team" role="menuitem" @click="closeMenu">Works</RouterLink>
+      <RouterLink to="/Team" role="menuitem" @click="closeMenu">Team</RouterLink>
       <RouterLink to="/opensource" role="menuitem" @click="closeMenu">Open Source</RouterLink>
       <RouterLink to="/reviews/" role="menuitem" @click="closeMenu">Reviews</RouterLink>
       <RouterLink to="/links" role="menuitem" @click="closeMenu">Links</RouterLink>
@@ -145,7 +145,7 @@ const pages = [
   { slug: 'home', label: 'Home', href: '/', icon: Home },
   { slug: 'about', label: 'About me', href: '/about', icon: UsersRound },
   { slug: 'open-source', label: 'Open Source', href: '/opensource', icon: Boxes },
-  { slug: 'developers', label: 'Works', href: '/Team', icon: UsersRound },
+  { slug: 'developers', label: 'Team', href: '/Team', icon: UsersRound },
   { slug: 'links', label: 'Links', href: '/links', icon: Link2 },
   { slug: 'reviews', label: 'Reviews', href: '/reviews/', icon: MessageSquareText },
   { slug: 'credits', label: 'Credits', href: '/credits/', icon: FileText },
@@ -163,8 +163,13 @@ const creditSections = [
       },
       {
         name: 'Inspira UI Pattern Background',
-        note: 'The subtle moving grid background used on the Works page.',
+        note: 'The subtle moving grid background used in the portfolio shell.',
         href: 'https://inspira-ui.com/',
+      },
+      {
+        name: 'Lenis',
+        note: 'The smooth scrolling engine used to create the fluid page transitions across the site.',
+        href: 'https://www.lenis.dev/',
       },
     ],
   },

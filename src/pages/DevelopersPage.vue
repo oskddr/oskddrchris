@@ -358,7 +358,7 @@
       </button>
       <div id="topbarMenu" :data-open="menuOpen" @pointermove="keepMenuOpen" @focusin="keepMenuOpen" @keydown="keepMenuOpen">
         <RouterLink to="/about" role="menuitem" data-cursor-hover @click="closeMenu">{{ t('topAbout') }}</RouterLink>
-        <RouterLink to="/Team" role="menuitem" data-cursor-hover @click="closeMenu">Works</RouterLink>
+        <RouterLink to="/Team" role="menuitem" data-cursor-hover @click="closeMenu">Team</RouterLink>
         <RouterLink to="/opensource" role="menuitem" data-cursor-hover @click="closeMenu">{{ t('topAssets') }}</RouterLink>
         <RouterLink to="/reviews/" role="menuitem" data-cursor-hover @click="closeMenu">Reviews</RouterLink>
         <RouterLink to="/links" role="menuitem" data-cursor-hover @click="closeMenu">{{ t('pageLinks') }}</RouterLink>
@@ -2229,7 +2229,7 @@ const pages = [
   { slug: "home", label: "Home", href: "/" },
   { slug: "about", label: "About me", href: "/about" },
   { slug: "assets", label: "Open Source", href: "/opensource" },
-  { slug: "developers", label: "Works", href: "/Team" },
+  { slug: "developers", label: "Team", href: "/Team" },
   { slug: "links", label: "Links", href: "/links" },
   { slug: "reviews", label: "Reviews", href: "/reviews/" },
   { slug: "credits", label: "Credits", href: "/credits/" },
@@ -2245,7 +2245,7 @@ const translations: Record<string, Record<string, string>> = {
   en: {
     topAbout: 'About me',
     topAssets: 'Open Source',
-    topDevelopers: 'Works',
+    topDevelopers: 'Team',
     topTOS: 'TOS',
     searchPlaceholder: "Search",
     searchMain: "Search",
@@ -2261,7 +2261,7 @@ const translations: Record<string, Record<string, string>> = {
     curatorsSectionLabel: 'Curators',
     heroDescription: 'Scripts, UI, animation, models, and curation by Christopher Böhme.',
     heroBtnAssets: 'Assets',
-    heroBtnDevelopers: 'Works',
+    heroBtnDevelopers: 'Team',
     shipWith: 'Publish with',
     feature1Title: 'Drop-in Ready',
     feature1Desc: 'Designed to work out of the box with minimal setup or adjustment',
@@ -2273,7 +2273,7 @@ const translations: Record<string, Record<string, string>> = {
     pagesLabel: 'Pages',
     pageHome: 'Home',
     pageAssets: "Open Source",
-    pageDevelopers: 'Works',
+    pageDevelopers: 'Team',
     pageLinks: 'Links',
     pageTOS: 'TOS',
     confidence: 'confidence',

@@ -32,7 +32,7 @@ const pages = [
   { slug: 'home', label: 'Home', href: '/' },
   { slug: 'about', label: 'About me', href: '/about' },
   { slug: 'open-source', label: 'Open Source', href: '/opensource' },
-  { slug: 'developers', label: 'Works', href: '/Team' },
+  { slug: 'developers', label: 'Team', href: '/Team' },
   { slug: 'links', label: 'Links', href: '/links' },
   { slug: 'reviews', label: 'Reviews', href: '/reviews/' },
   { slug: 'credits', label: 'Credits', href: '/credits/' },
@@ -193,7 +193,7 @@ onBeforeUnmount(() => {
     </button>
     <div id="topbarMenu" :data-open="menuOpen" @pointermove="keepMenuOpen" @focusin="keepMenuOpen" @keydown="keepMenuOpen">
       <RouterLink to="/about" role="menuitem" @click="closeMenu">About me</RouterLink>
-      <RouterLink to="/Team" role="menuitem" @click="closeMenu">Works</RouterLink>
+      <RouterLink to="/Team" role="menuitem" @click="closeMenu">Team</RouterLink>
       <RouterLink to="/opensource" role="menuitem" @click="closeMenu">Open Source</RouterLink>
       <RouterLink to="/reviews/" role="menuitem" @click="closeMenu">Reviews</RouterLink>
       <RouterLink to="/links" role="menuitem" @click="closeMenu">Links</RouterLink>
@@ -251,7 +251,7 @@ onBeforeUnmount(() => {
       <div class="footer-links">
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/opensource">Open Source</RouterLink>
-        <RouterLink to="/Team">Works</RouterLink>
+        <RouterLink to="/Team">Team</RouterLink>
       </div>
       <span class="footer-copy">© 2026 Christopher Böhme</span>
     </div>

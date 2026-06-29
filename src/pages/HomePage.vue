@@ -907,6 +907,7 @@ h1,h2,h3,h4,h5,h6{
   margin: 0 auto;
   display: grid;
   gap: clamp(1rem, 2.4vw, 1.6rem);
+  justify-items: start;
 }
 
 .section-head h3{
@@ -1119,6 +1120,7 @@ h1,h2,h3,h4,h5,h6{
   grid-template-columns: repeat(3, minmax(0, 1fr));
   margin-top: 1.1rem;
   align-items: stretch;
+  justify-items: start;
 }
 
 .testimonial-card{
@@ -1137,7 +1139,7 @@ h1,h2,h3,h4,h5,h6{
   max-height: 190px;
   max-width: 350px;
   width: 100%;
-  margin: 0 auto;
+  margin: 0;
   overflow: hidden;
   transition: transform 200ms ease, box-shadow 220ms ease, border-color 220ms ease;
 }
@@ -2660,7 +2662,7 @@ const pages = [
   { slug: "home", label: "Home", href: "/" },
   { slug: "about", label: "About me", href: "/about" },
   { slug: "assets", label: "Open Source", href: "/opensource" },
-  { slug: "developers", label: "Works", href: "/Team" },
+  { slug: "developers", label: "Team", href: "/Team" },
   { slug: "links", label: "Links", href: "/links" },
   { slug: "reviews", label: "Reviews", href: "/reviews/" },
   { slug: "credits", label: "Credits", href: "/credits/" },
@@ -2681,14 +2683,14 @@ const translations: Record<string, Record<string, string>> = {
   en: {
     topAbout: "About me",
     topAssets: "Open Source",
-    topDevelopers: "Works",
+    topDevelopers: "Team",
     topTOS: "TOS",
     searchPlaceholder: "Search",
     searchMain: "Search",
     heroTitle: "oskddrchris",
     heroSubtitle: "",
     heroBtnAssets: "Assets",
-    heroBtnDevelopers: "Works",
+    heroBtnDevelopers: "Team",
     promoDiscount: "Launch Offer — 50% off all sales",
     shipWith: "Experience In",
     experienceSubtitle: "Focused work across websites, Roblox scripting, and interface design.",
@@ -2800,7 +2802,7 @@ const translations: Record<string, Record<string, string>> = {
     pagesLabel: "Pages",
     pageHome: "Home",
     pageAssets: "Open Source",
-    pageDevelopers: "Works",
+    pageDevelopers: "Team",
     pageLinks: "Links",
     pageTOS: "TOS",
     confidence: "Web Development",
